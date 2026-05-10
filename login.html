@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TruthGuard - Fake News Detection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .step-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .step-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .result-tag {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .result-tag.true {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 2px solid #10b981;
+    }
+    .result-tag.false {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+    .hidden {
+      display: none;
+    }
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+    .fact-check-item {
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      background: #f9fafb;
+    }
+    .fact-check-item.verified {
+      border-left: 4px solid #10b981;
+    }
+    .fact-check-item.failed {
+      border-left: 4px solid #ef4444;
+    }
+    .keyword-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      margin: 0.25rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      background: #e5e7eb;
+    }
+    .keyword-badge.suspicious {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .keyword-badge.normal {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .nav-active {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+    .page-section {
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      min-width: 200px;
+      display: none;
+      z-index: 1000;
+      margin-top: 10px;
+    }
+    .dropdown-menu.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #4b5563;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+    .dropdown-item:hover {
+      background: #f9fafb;
+      color: #667eea;
+    }
+    .dropdown-item.logout {
+      color: #ef4444;
+    }
+    .news-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+    .news-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .profile-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    .history-item {
+      padding: 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    .history-item:hover {
+      background: #f9fafb;
+      border-color: #667eea;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Login Page -->
+  <div id="loginPage" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full">
+      <div class="text-center mb-8">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+            <i class="fas fa-shield-alt text-white text-2xl"></i>
+          </div>
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            TruthGuard
+          </h1>
+        </div>
+        <p class="text-gray-600">Fake News Detection System</p>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <input type="email" id="email" required 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="Enter email" value="test@truthguard.com">
+        </div>
+        <div>
+          <input type="password" id="password" required 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="Enter password" value="password123">
+        </div>
+        <div class="text-right">
+          <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+        </div>
+        <button type="submit" 
+                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition shadow-md">
+          <i class="fas fa-sign-in-alt mr-2"></i>Login to Dashboard
+        </button>
+      </form>
+      
+      <div class="mt-6 text-center text-sm text-gray-500">
+        <p>Don't have an account? <a href="signup.html" class="text-blue-600 font-medium">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div id="mainPage" class="min-h-screen hidden">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+              <i class="fas fa-shield-alt text-blue-600 text-xl"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold">TruthGuard</h1>
+              <p class="text-xs text-blue-100">Fake News Detection</p>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <div class="hidden md:flex items-center gap-6">
+            <a href="#" class="nav-link hover:text-blue-100 transition" data-page="home">
+              <i class="fas fa-home mr-2"></i>Home
+            </a>
+            <a href="#" class="nav-link hover:text-blue-100 transition" data-page="detection">
+              <i class="fas fa-search mr-2"></i>Detection
+            </a>
+            <a href="#" class="nav-link hover:text-blue-100 transition" data-page="trending">
+              <i class="fas fa-fire mr-2"></i>Trending News
+            </a>
+            <a href="#" class="nav-link hover:text-blue-100 transition" data-page="feed">
+              <i class="fas fa-newspaper mr-2"></i>Feed
+            </a>
+            <a href="#" class="nav-link hover:text-blue-100 transition" data-page="history">
+              <i class="fas fa-history mr-2"></i>History
+            </a>
+            <a href="#" class="nav-link hover:text-blue-100 transition" data-page="profile">
+              <i class="fas fa-user mr-2"></i>Profile
+            </a>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button id="mobileMenuBtn" class="md:hidden text-2xl">
+            <i class="fas fa-bars"></i>
+          </button>
+
+          <!-- User Dropdown -->
+          <div class="relative">
+            <button id="userDropdownBtn" class="flex items-center gap-3 hover:bg-white/10 p-2 rounded-lg transition">
+              <div class="user-avatar" id="userAvatar">T</div>
+              <div class="hidden md:block text-left">
+                <div class="font-medium" id="userName">Test User</div>
+                <div class="text-xs text-blue-100">Premium User</div>
+              </div>
+              <i class="fas fa-chevron-down text-sm"></i>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div id="userDropdown" class="dropdown-menu">
+              <a href="#" class="dropdown-item" data-page="profile">
+                <i class="fas fa-user-circle"></i>My Profile
+              </a>
+              <a href="#" class="dropdown-item" data-page="history">
+                <i class="fas fa-history"></i>Verification History
+              </a>
+              <a href="#" class="dropdown-item" data-page="settings">
+                <i class="fas fa-cog"></i>Settings
+              </a>
+              <div class="border-t my-2"></div>
+              <a href="#" id="logoutBtn" class="dropdown-item logout">
+                <i class="fas fa-sign-out-alt"></i>Logout
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden mt-4 hidden">
+          <div class="flex flex-col gap-2">
+            <a href="#" class="mobile-nav-link py-3 px-4 rounded-lg hover:bg-white/10 transition" data-page="home">
+              <i class="fas fa-home mr-3"></i>Home
+            </a>
+            <a href="#" class="mobile-nav-link py-3 px-4 rounded-lg hover:bg-white/10 transition" data-page="detection">
+              <i class="fas fa-search mr-3"></i>Detection
+            </a>
+            <a href="#" class="mobile-nav-link py-3 px-4 rounded-lg hover:bg-white/10 transition" data-page="trending">
+              <i class="fas fa-fire mr-3"></i>Trending News
+            </a>
+            <a href="#" class="mobile-nav-link py-3 px-4 rounded-lg hover:bg-white/10 transition" data-page="feed">
+              <i class="fas fa-newspaper mr-3"></i>Feed
+            </a>
+            <a href="#" class="mobile-nav-link py-3 px-4 rounded-lg hover:bg-white/10 transition" data-page="history">
+              <i class="fas fa-history mr-3"></i>History
+            </a>
+            <a href="#" class="mobile-nav-link py-3 px-4 rounded-lg hover:bg-white/10 transition" data-page="profile">
+              <i class="fas fa-user mr-3"></i>Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Home Page (Default) -->
+      <div id="homePage" class="page-section">
+        <div class="text-center mb-10">
+          <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to TruthGuard</h1>
+          <p class="text-xl text-gray-600">Advanced AI-powered fake news detection system</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid md:grid-cols-4 gap-6 mb-10">
+          <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2" id="statsVerified">0</div>
+            <div class="text-gray-600">News Verified</div>
+          </div>
+          <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2" id="statsReal">0</div>
+            <div class="text-gray-600">Real News Found</div>
+          </div>
+          <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-red-600 mb-2" id="statsFake">0</div>
+            <div class="text-gray-600">Fake News Detected</div>
+          </div>
+          <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2" id="statsAccuracy">0%</div>
+            <div class="text-gray-600">Detection Accuracy</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid md:grid-cols-3 gap-6 mb-10">
+          <div class="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-search text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Verify News</h3>
+            <p class="mb-4">Check if news is fake or real using our AI system</p>
+            <button class="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition" data-page="detection">
+              Start Verification
+            </button>
+          </div>
+          <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-fire text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Trending News</h3>
+            <p class="mb-4">See what's trending and check their authenticity</p>
+            <button class="bg-white text-green-600 px-6 py-2 rounded-lg font-medium hover:bg-green-50 transition" data-page="trending">
+              View Trending
+            </button>
+          </div>
+          <div class="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-history text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Your History</h3>
+            <p class="mb-4">Review your previous news verifications</p>
+            <button class="bg-white text-orange-600 px-6 py-2 rounded-lg font-medium hover:bg-orange-50 transition" data-page="history">
+              View History
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Activity</h2>
+          <div id="recentActivity">
+            <p class="text-gray-500 text-center py-8">No recent activity. Start by verifying some news!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detection Page -->
+      <div id="detectionPage" class="page-section hidden">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Check News for Fake or Real</h2>
+          <p class="text-gray-600 mb-6">Enter news details and our system will analyze it in 4 steps</p>
+          
+          <form id="newsForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">News Title</label>
+              <input type="text" id="newsTitle" required 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                     placeholder="Enter news title">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">News Content</label>
+              <textarea id="newsContent" rows="5" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        placeholder="Paste news content here..."></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Location (Optional)</label>
+              <input type="text" id="newsLocation" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                     placeholder="e.g., Govadari Dam, Mumbai">
+            </div>
+            
+            <div class="flex gap-4">
+              <button type="button" id="sampleRealBtn" class="flex-1 bg-green-50 text-green-700 py-3 rounded-lg font-medium hover:bg-green-100 transition border border-green-200">
+                <i class="fas fa-check-circle mr-2"></i>Load Real News Sample
+              </button>
+              <button type="button" id="sampleFakeBtn" class="flex-1 bg-red-50 text-red-700 py-3 rounded-lg font-medium hover:bg-red-100 transition border border-red-200">
+                <i class="fas fa-times-circle mr-2"></i>Load Fake News Sample
+              </button>
+            </div>
+            
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition shadow-md">
+              <i class="fas fa-search mr-2"></i>Analyze News
+            </button>
+          </form>
+        </div>
+
+        <!-- Analysis Steps Section -->
+        <div id="analysisSection" class="hidden">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">Analysis Process</h2>
+          
+          <!-- Step 1: Content Analysis -->
+          <div class="step-card" id="step1">
+            <div class="step-number">1</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">Content Analysis</h3>
+            <p class="text-gray-600 mb-4">Examining emotional tone, sensationalism, and language patterns</p>
+            
+            <div class="progress-bar">
+              <div id="contentProgress" class="progress-fill bg-blue-500" style="width: 0%"></div>
+            </div>
+            
+            <div id="contentResults" class="mt-4 space-y-3 hidden">
+              <div class="flex justify-between items-center">
+                <span class="font-medium">Language Tone:</span>
+                <span id="toneResult" class="px-3 py-1 rounded-full text-sm"></span>
+              </div>
+              <div>
+                <span class="font-medium block mb-2">Detected Keywords:</span>
+                <div id="keywordsContainer"></div>
+              </div>
+              <div>
+                <span class="font-medium">Result:</span>
+                <span id="contentVerdict" class="ml-2 font-medium"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Source Verification -->
+          <div class="step-card" id="step2">
+            <div class="step-number">2</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">Source Verification</h3>
+            <p class="text-gray-600 mb-4">Checking source reputation and historical accuracy</p>
+            
+            <div class="progress-bar">
+              <div id="sourceProgress" class="progress-fill bg-green-500" style="width: 0%"></div>
+            </div>
+            
+            <div id="sourceResults" class="mt-4 space-y-3 hidden">
+              <div class="flex justify-between items-center">
+                <span class="font-medium">Source Check:</span>
+                <span id="sourceCheck" class="px-3 py-1 rounded-full text-sm"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="font-medium">Location Verification:</span>
+                <span id="locationCheck" class="px-3 py-1 rounded-full text-sm"></span>
+              </div>
+              <div>
+                <span class="font-medium">Result:</span>
+                <span id="sourceVerdict" class="ml-2 font-medium"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Fact Checking -->
+          <div class="step-card" id="step3">
+            <div class="step-number">3</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">Fact Checking</h3>
+            <p class="text-gray-600 mb-4">Cross-referencing with trusted databases and facts</p>
+            
+            <div class="progress-bar">
+              <div id="factProgress" class="progress-fill bg-yellow-500" style="width: 0%"></div>
+            </div>
+            
+            <div id="factResults" class="mt-4 space-y-3 hidden">
+              <div id="factChecksContainer"></div>
+              <div>
+                <span class="font-medium">Result:</span>
+                <span id="factVerdict" class="ml-2 font-medium"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: AI Pattern Recognition -->
+          <div class="step-card" id="step4">
+            <div class="step-number">4</div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">AI Pattern Recognition</h3>
+            <p class="text-gray-600 mb-4">Using ML models to identify fake news patterns</p>
+            
+            <div class="progress-bar">
+              <div id="aiProgress" class="progress-fill bg-red-500" style="width: 0%"></div>
+            </div>
+            
+            <div id="aiResults" class="mt-4 space-y-3 hidden">
+              <div class="flex justify-between items-center">
+                <span class="font-medium">Pattern Match:</span>
+                <span id="patternMatch" class="px-3 py-1 rounded-full text-sm"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="font-medium">AI Confidence:</span>
+                <span id="aiConfidence" class="font-medium"></span>
+              </div>
+              <div>
+                <span class="font-medium">Result:</span>
+                <span id="aiVerdict" class="ml-2 font-medium"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Final Result -->
+          <div id="finalResult" class="step-card hidden">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Final Result</h3>
+            
+            <div class="text-center py-6">
+              <div id="resultIcon" class="text-6xl mb-4">
+                <i class="fas fa-question-circle text-gray-400"></i>
+              </div>
+              
+              <div id="resultTag" class="inline-block result-tag mb-4">
+                ANALYZING...
+              </div>
+              
+              <h4 id="resultTitle" class="text-xl font-semibold mb-2">Processing Complete</h4>
+              <p id="resultDescription" class="text-gray-600 mb-6">
+                Based on our 4-step analysis, this news appears to be:
+              </p>
+              
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h5 class="font-semibold mb-2">Analysis Summary:</h5>
+                <ul id="resultSummary" class="text-left space-y-2 text-gray-600">
+                  <li>Content Analysis: <span id="sumContent">Processing...</span></li>
+                  <li>Source Verification: <span id="sumSource">Processing...</span></li>
+                  <li>Fact Checking: <span id="sumFact">Processing...</span></li>
+                  <li>AI Pattern Recognition: <span id="sumAI">Processing...</span></li>
+                </ul>
+              </div>
+              
+              <div class="mt-6">
+                <button id="analyzeAgainBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition">
+                  <i class="fas fa-redo mr-2"></i>Analyze Another News
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trending News Page -->
+      <div id="trendingPage" class="page-section hidden">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-bold text-gray-800 mb-4">Trending News</h1>
+          <p class="text-gray-600">Top news stories trending right now</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+          <!-- Trending News 1 -->
+          <div class="news-card">
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                <i class="fas fa-bolt mr-1"></i>Trending
+              </span>
+              <span class="text-sm text-gray-500">2 hours ago</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-3">Climate Summit Achieves Breakthrough Agreement</h3>
+            <p class="text-gray-600 mb-4">World leaders reach historic climate agreement with concrete targets for carbon reduction...</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Source: Global News Network</span>
+              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" onclick="verifyTrendingNews(1)">
+                Verify
+              </button>
+            </div>
+          </div>
+
+          <!-- Trending News 2 -->
+          <div class="news-card">
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+                <i class="fas fa-exclamation-triangle mr-1"></i>Controversial
+              </span>
+              <span class="text-sm text-gray-500">5 hours ago</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-3">New Study Claims Coffee Increases Lifespan</h3>
+            <p class="text-gray-600 mb-4">Groundbreaking research suggests 3 cups of coffee daily can extend life by 5 years...</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Source: Health Research Daily</span>
+              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" onclick="verifyTrendingNews(2)">
+                Verify
+              </button>
+            </div>
+          </div>
+
+          <!-- Trending News 3 -->
+          <div class="news-card">
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                <i class="fas fa-check-circle mr-1"></i>Verified
+              </span>
+              <span class="text-sm text-gray-500">1 day ago</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-3">Stock Markets Reach All-Time High</h3>
+            <p class="text-gray-600 mb-4">Global stock markets surge to record levels amid positive economic indicators...</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Source: Financial Times</span>
+              <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                <i class="fas fa-check mr-2"></i>Verified
+              </button>
+            </div>
+          </div>
+
+          <!-- Trending News 4 -->
+          <div class="news-card">
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+                <i class="fas fa-question-circle mr-1"></i>Suspicious
+              </span>
+              <span class="text-sm text-gray-500">3 hours ago</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-3">BREAKING: Major Airport Shutdown Due to Security Threat</h3>
+            <p class="text-gray-600 mb-4">URGENT: International airport closed indefinitely after security breach. Officials refuse to comment...</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Source: Unverified</span>
+              <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" onclick="verifyTrendingNews(4)">
+                Check Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <button class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition">
+            <i class="fas fa-sync-alt mr-2"></i>Load More Trending News
+          </button>
+        </div>
+      </div>
+
+      <!-- Feed Page -->
+      <div id="feedPage" class="page-section hidden">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-bold text-gray-800 mb-4">News Feed</h1>
+          <p class="text-gray-600">Latest verified news from trusted sources</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Left Column - Categories -->
+          <div class="md:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">Categories</h3>
+              <div class="space-y-2">
+                <button class="feed-category w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition active">
+                  <i class="fas fa-globe mr-3 text-blue-600"></i>World News
+                </button>
+                <button class="feed-category w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition">
+                  <i class="fas fa-bolt mr-3 text-yellow-600"></i>Technology
+                </button>
+                <button class="feed-category w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition">
+                  <i class="fas fa-heartbeat mr-3 text-red-600"></i>Health
+                </button>
+                <button class="feed-category w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition">
+                  <i class="fas fa-chart-line mr-3 text-green-600"></i>Business
+                </button>
+                <button class="feed-category w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition">
+                  <i class="fas fa-futbol mr-3 text-purple-600"></i>Sports
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">Trusted Sources</h3>
+              <div class="space-y-3">
+                <div class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                  <span>Reuters Verified</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                  <span>Associated Press</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                  <span>BBC News</span>
+                </div>
+                <div class="flex items-center">
+                  <i class="fas fa-exclamation-triangle text-yellow-500 mr-3"></i>
+                  <span>Social Media Sources</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column - Feed Content -->
+          <div class="md:col-span-2">
+            <!-- Feed Item 1 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-newspaper text-blue-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold">BBC News</div>
+                    <div class="text-sm text-gray-500">Verified Source • 1 hour ago</div>
+                  </div>
+                </div>
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                  <i class="fas fa-check mr-1"></i>Verified
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-3">New AI Tool Can Detect Early Cancer Signs</h3>
+              <p class="text-gray-600 mb-4">Researchers develop AI system that can detect early signs of cancer with 95% accuracy from medical scans...</p>
+              <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-500">
+                  <i class="far fa-thumbs-up mr-1"></i> 245 • 
+                  <i class="far fa-comment mr-1 ml-3"></i> 42
+                </div>
+                <button class="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                  <i class="fas fa-share mr-2"></i>Share
+                </button>
+              </div>
+            </div>
+
+            <!-- Feed Item 2 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold">Warning</div>
+                    <div class="text-sm text-gray-500">Unverified Source • 30 mins ago</div>
+                  </div>
+                </div>
+                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+                  <i class="fas fa-times mr-1"></i>Fake Alert
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-3">Vaccine Causes New Disease - FALSE CLAIM</h3>
+              <p class="text-gray-600 mb-4">Our fact-checkers have verified this claim is FALSE. No evidence supports that vaccines cause new diseases...</p>
+              <div class="bg-red-50 p-4 rounded-lg mb-4">
+                <div class="flex items-center">
+                  <i class="fas fa-times-circle text-red-600 mr-3"></i>
+                  <span class="font-medium">TruthGuard Verification: FALSE</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Multiple health organizations confirm vaccines are safe and effective.</p>
+              </div>
+              <div class="text-sm text-gray-500">
+                <i class="fas fa-eye mr-1"></i> 1,245 people warned about this fake news
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Page -->
+      <div id="historyPage" class="page-section hidden">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-bold text-gray-800 mb-4">Verification History</h1>
+          <p class="text-gray-600">Your previous news verification results</p>
+        </div>
+
+        <div class="mb-6 flex gap-4">
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">All</button>
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Real News</button>
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Fake News</button>
+          <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">This Week</button>
+        </div>
+
+        <div id="historyContainer">
+          <!-- History items will be dynamically added here -->
+          <div class="text-center py-12 text-gray-500">
+            <i class="fas fa-history text-4xl mb-4"></i>
+            <p>No verification history yet</p>
+            <p class="text-sm mt-2">Start by verifying some news in the Detection section</p>
+            <button class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-page="detection">
+              Go to Detection
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Page -->
+      <div id="profilePage" class="page-section hidden">
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Left Column - Profile Info -->
+          <div class="md:col-span-1">
+            <div class="profile-card">
+              <div class="text-center mb-6">
+                <div class="user-avatar mx-auto mb-4" style="width: 80px; height: 80px; font-size: 32px;" id="profileAvatar">T</div>
+                <h2 class="text-2xl font-bold" id="profileName">Test User</h2>
+                <p class="text-gray-600" id="profileEmail">test@truthguard.com</p>
+                <div class="mt-4">
+                  <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                    Premium Member
+                  </span>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <div class="text-sm text-gray-500">Member Since</div>
+                  <div class="font-medium" id="memberSince">January 2024</div>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500">Verifications</div>
+                  <div class="font-medium" id="totalVerifications">0 verifications</div>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500">Accuracy Score</div>
+                  <div class="font-medium text-green-600" id="accuracyScore">0%</div>
+                </div>
+              </div>
+
+              <button class="w-full mt-6 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                <i class="fas fa-edit mr-2"></i>Edit Profile
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column - Activity & Settings -->
+          <div class="md:col-span-2">
+            <!-- Recent Activity -->
+            <div class="profile-card mb-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-6">Recent Activity</h3>
+              <div id="profileActivity">
+                <p class="text-gray-500 text-center py-4">No recent activity</p>
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="profile-card">
+              <h3 class="text-xl font-bold text-gray-800 mb-6">Account Settings</h3>
+              
+              <div class="space-y-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Email Notifications</label>
+                  <div class="flex items-center">
+                    <input type="checkbox" id="emailNotifications" class="mr-3" checked>
+                    <label for="emailNotifications">Receive email alerts for fake news in your area</label>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">News Categories</label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="flex items-center">
+                      <input type="checkbox" id="categoryPolitics" class="mr-2" checked>
+                      <label for="categoryPolitics">Politics</label>
+                    </div>
+                    <div class="flex items-center">
+                      <input type="checkbox" id="categoryHealth" class="mr-2" checked>
+                      <label for="categoryHealth">Health</label>
+                    </div>
+                    <div class="flex items-center">
+                      <input type="checkbox" id="categoryTech" class="mr-2">
+                      <label for="categoryTech">Technology</label>
+                    </div>
+                    <div class="flex items-center">
+                      <input type="checkbox" id="categorySports" class="mr-2">
+                      <label for="categorySports">Sports</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Privacy Settings</label>
+                  <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <option>Public Profile</option>
+                    <option>Private Profile</option>
+                    <option>Friends Only</option>
+                  </select>
+                </div>
+
+                <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                  Save Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Fake News Detection System
+    class NewsDetector {
+      constructor() {
+        this.factDatabase = {
+          "govadari dam": {
+            status: "operational",
+            lastInspection: "2024-01-15",
+            capacity: "85%",
+            location: "Maharashtra"
+          },
+          "rainfall": {
+            currentStatus: "monitoring",
+            warningLevel: "alert",
+            affectedAreas: ["Govadari Dam area"]
+          },
+          "flood": {
+            currentStatus: "no active floods",
+            warnings: ["low-lying areas alert"]
+          }
+        };
+
+        this.suspiciousPatterns = [
+          /BREAKING/i,
+          /URGENT/i,
+          /COLLAPSED/i,
+          /THOUSANDS DEAD/i,
+          /GOVERNMENT HIDING/i,
+          /SHARE.*IMMEDIATELY/i,
+          /MAINSTREAM MEDIA SILENT/i,
+          /DELETE.*BEFORE/i,
+          /!\s*!/g,
+          /\b[A-Z]{3,}\b/g
+        ];
+
+        this.trustedKeywords = [
+          "meteorological department",
+          "authorities",
+          "official measurements",
+          "monitoring",
+          "advisory",
+          "emergency services",
+          "according to",
+          "issued warning"
+        ];
+      }
+
+      analyzeContent(title, content) {
+        const text = title + " " + content;
+        let score = 100;
+        const detectedKeywords = [];
+        
+        this.suspiciousPatterns.forEach(pattern => {
+          if (pattern.test(text)) {
+            score -= 20;
+            detectedKeywords.push({
+              word: pattern.toString(),
+              type: 'suspicious'
+            });
+          }
+        });
+
+        this.trustedKeywords.forEach(keyword => {
+          if (text.toLowerCase().includes(keyword)) {
+            score += 10;
+            detectedKeywords.push({
+              word: keyword,
+              type: 'normal'
+            });
+          }
+        });
+
+        const emotionalWords = ["dead", "died", "tragedy", "disaster", "horror", "catastrophe"];
+        let emotionalCount = 0;
+        emotionalWords.forEach(word => {
+          if (text.toLowerCase().includes(word)) emotionalCount++;
+        });
+
+        if (emotionalCount > 2) score -= 15;
+
+        let tone = "Neutral";
+        if (score > 70) tone = "Professional";
+        else if (score > 40) tone = "Moderate";
+        else tone = "Sensational";
+
+        return {
+          score: Math.max(0, Math.min(100, score)),
+          tone,
+          detectedKeywords,
+          verdict: score >= 60 ? "✅ Normal Content" : "⚠️ Suspicious Content"
+        };
+      }
+
+      verifySource(title, content, location) {
+        const text = title + " " + content;
+        let score = 50;
+        let sourceCheck = "❓ Unknown";
+        let locationCheck = "❓ Not Verified";
+
+        if (location) {
+          const locationLower = location.toLowerCase();
+          if (this.factDatabase[locationLower]) {
+            score += 30;
+            locationCheck = "✅ Location Exists";
+          } else {
+            score -= 10;
+            locationCheck = "⚠️ Location Unverified";
+          }
+        }
+
+        if (text.toLowerCase().includes("meteorological department") ||
+            text.toLowerCase().includes("authorities")) {
+          score += 20;
+          sourceCheck = "✅ Official Sources";
+        }
+
+        if (text.toLowerCase().includes("share immediately") ||
+            text.toLowerCase().includes("urgent news")) {
+          score -= 20;
+          sourceCheck = "⚠️ Unverified Source";
+        }
+
+        return {
+          score: Math.max(0, Math.min(100, score)),
+          sourceCheck,
+          locationCheck,
+          verdict: score >= 60 ? "✅ Reliable Source" : "⚠️ Questionable Source"
+        };
+      }
+
+      checkFacts(title, content) {
+        const text = title + " " + content;
+        const checks = [];
+        let score = 100;
+
+        if (text.toLowerCase().includes("dam collapsed")) {
+          if (this.factDatabase["govadari dam"].status === "operational") {
+            checks.push({
+              claim: "Dam collapsed",
+              result: "❌ FALSE",
+              details: "Govadari Dam is operational as per latest reports"
+            });
+            score -= 40;
+          }
+        }
+
+        const deathMatch = text.match(/(thousands|hundreds|many)\s+(dead|died|killed)/i);
+        if (deathMatch) {
+          checks.push({
+            claim: "Mass casualties reported",
+            result: "❌ UNVERIFIED",
+            details: "No official reports confirm mass casualties"
+          });
+          score -= 30;
+        }
+
+        if (text.toLowerCase().includes("heavy rainfall")) {
+          checks.push({
+            claim: "Heavy rainfall",
+            result: "✅ POSSIBLE",
+            details: "Rainfall patterns vary, check weather department"
+          });
+        }
+
+        if (text.toLowerCase().includes("government hiding") ||
+            text.toLowerCase().includes("cover-up")) {
+          checks.push({
+            claim: "Government cover-up",
+            result: "❌ UNLIKELY",
+            details: "No evidence of government withholding information"
+          });
+          score -= 20;
+        }
+
+        if (checks.length === 0) {
+          checks.push({
+            claim: "General information",
+            result: "✅ VERIFIED",
+            details: "Content appears factual"
+          });
+        }
+
+        return {
+          score: Math.max(0, Math.min(100, score)),
+          checks,
+          verdict: score >= 70 ? "✅ Mostly Factual" : 
+                   score >= 40 ? "⚠️ Mixed Accuracy" : "❌ Mostly False"
+        };
+      }
+
+      analyzePatterns(title, content) {
+        const text = title + " " + content;
+        let score = 100;
+        let patternMatch = "Normal";
+
+        const capsWords = text.match(/\b[A-Z]{4,}\b/g);
+        if (capsWords && capsWords.length > 2) {
+          score -= 25;
+          patternMatch = "Sensational";
+        }
+
+        const exclamations = (text.match(/!/g) || []).length;
+        if (exclamations > 3) {
+          score -= (exclamations - 3) * 10;
+          patternMatch = "Emotional";
+        }
+
+        if (text.toLowerCase().includes("share") && 
+            (text.toLowerCase().includes("immediately") || 
+             text.toLowerCase().includes("now") ||
+             text.toLowerCase().includes("quick"))) {
+          score -= 20;
+          patternMatch = "Viral Pattern";
+        }
+
+        if (text.toLowerCase().includes("breaking") || 
+            text.toLowerCase().includes("urgent")) {
+          score -= 15;
+          patternMatch = "Breaking News Pattern";
+        }
+
+        if (score >= 80) patternMatch = "Normal News Pattern";
+        else if (score >= 60) patternMatch = "Moderate Pattern";
+        else if (score >= 40) patternMatch = "Suspicious Pattern";
+        else patternMatch = "Fake News Pattern";
+
+        return {
+          score: Math.max(0, Math.min(100, score)),
+          patternMatch,
+          confidence: score >= 80 ? "High" : 
+                     score >= 60 ? "Medium" : "Low",
+          verdict: score >= 70 ? "✅ Normal Pattern" : 
+                   score >= 40 ? "⚠️ Suspicious Pattern" : "❌ Fake News Pattern"
+        };
+      }
+
+      getOverallResult(steps) {
+        const totalScore = (
+          steps.content.score * 0.25 +
+          steps.source.score * 0.25 +
+          steps.fact.score * 0.25 +
+          steps.ai.score * 0.25
+        );
+
+        if (totalScore >= 80) {
+          return {
+            result: "TRUE",
+            icon: "fa-check-circle",
+            color: "text-green-500",
+            tag: "true",
+            description: "This news appears to be authentic and credible"
+          };
+        } else if (totalScore >= 60) {
+          return {
+            result: "PARTIALLY TRUE",
+            icon: "fa-exclamation-circle",
+            color: "text-yellow-500",
+            tag: "unverified",
+            description: "Some claims may be exaggerated or unverified"
+          };
+        } else {
+          return {
+            result: "FAKE",
+            icon: "fa-times-circle",
+            color: "text-red-500",
+            tag: "false",
+            description: "This news contains false or misleading information"
+          };
+        }
+      }
+    }
+
+    // Application State
+    const appState = {
+      currentUser: null,
+      history: [],
+      detector: new NewsDetector(),
+      currentPage: 'home'
+    };
+
+    // DOM Elements
+    const loginPage = document.getElementById('loginPage');
+    const mainPage = document.getElementById('mainPage');
+    const loginForm = document.getElementById('loginForm');
+    const userDropdownBtn = document.getElementById('userDropdownBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    // Page sections
+    const pages = {
+      home: document.getElementById('homePage'),
+      detection: document.getElementById('detectionPage'),
+      trending: document.getElementById('trendingPage'),
+      feed: document.getElementById('feedPage'),
+      history: document.getElementById('historyPage'),
+      profile: document.getElementById('profilePage')
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserData();
+      setupEventListeners();
+    });
+
+    function loadUserData() {
+      const savedUser = localStorage.getItem('truthGuardUser');
+      const savedHistory = localStorage.getItem('truthGuardHistory');
+      
+      if (savedUser) {
+        appState.currentUser = JSON.parse(savedUser);
+        appState.history = savedHistory ? JSON.parse(savedHistory) : [];
+        showMainPage();
+        updateUserProfile();
+        updateStats();
+        updateHistoryDisplay();
+      }
+    }
+
+    function setupEventListeners() {
+      // Login
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // For demo, auto-login with any credentials
+        if (email && password) {
+          appState.currentUser = {
+            name: email.split('@')[0],
+            email: email,
+            joined: new Date().toLocaleDateString(),
+            avatarLetter: email[0].toUpperCase()
+          };
+          
+          localStorage.setItem('truthGuardUser', JSON.stringify(appState.currentUser));
+          showMainPage();
+          updateUserProfile();
+        }
+      });
+
+      // Navigation
+      document.querySelectorAll('.nav-link, .mobile-nav-link, [data-page]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const page = this.getAttribute('data-page');
+          if (page) {
+            navigateTo(page);
+          }
+        });
+      });
+
+      // User dropdown
+      userDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function() {
+        userDropdown.classList.remove('show');
+      });
+
+      // Mobile menu
+      mobileMenuBtn.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem('truthGuardUser');
+        showLoginPage();
+      });
+
+      // Detection page functionality
+      setupDetectionPage();
+    }
+
+    function navigateTo(page) {
+      // Hide all pages
+      Object.values(pages).forEach(page => {
+        if (page) page.classList.add('hidden');
+      });
+      
+      // Show selected page
+      if (pages[page]) {
+        pages[page].classList.remove('hidden');
+        appState.currentPage = page;
+        
+        // Update active nav
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+          link.classList.remove('nav-active');
+          if (link.getAttribute('data-page') === page) {
+            link.classList.add('nav-active');
+          }
+        });
+        
+        // Close mobile menu
+        mobileMenu.classList.add('hidden');
+        
+        // Page-specific setup
+        if (page === 'detection') {
+          resetAnalysis();
+        }
+      }
+    }
+
+    function showMainPage() {
+      loginPage.classList.add('hidden');
+      mainPage.classList.remove('hidden');
+      navigateTo('home');
+    }
+
+    function showLoginPage() {
+      mainPage.classList.add('hidden');
+      loginPage.classList.remove('hidden');
+    }
+
+    function updateUserProfile() {
+      if (!appState.currentUser) return;
+      
+      const user = appState.currentUser;
+      document.getElementById('userAvatar').textContent = user.avatarLetter || 'U';
+      document.getElementById('userName').textContent = user.name || 'User';
+      document.getElementById('profileAvatar').textContent = user.avatarLetter || 'U';
+      document.getElementById('profileName').textContent = user.name || 'User';
+      document.getElementById('profileEmail').textContent = user.email || '';
+      document.getElementById('memberSince').textContent = user.joined || 'Recently';
+    }
+
+    function updateStats() {
+      const total = appState.history.length;
+      const real = appState.history.filter(h => h.result === 'TRUE').length;
+      const fake = appState.history.filter(h => h.result === 'FAKE').length;
+      const accuracy = total > 0 ? Math.round((real / total) * 100) : 0;
+      
+      document.getElementById('statsVerified').textContent = total;
+      document.getElementById('statsReal').textContent = real;
+      document.getElementById('statsFake').textContent = fake;
+      document.getElementById('statsAccuracy').textContent = accuracy + '%';
+      document.getElementById('totalVerifications').textContent = total + ' verifications';
+      document.getElementById('accuracyScore').textContent = accuracy + '%';
+      
+      // Update recent activity
+      updateRecentActivity();
+    }
+
+    function updateRecentActivity() {
+      const recent = appState.history.slice(0, 3);
+      const container = document.getElementById('recentActivity');
+      const profileContainer = document.getElementById('profileActivity');
+      
+      if (recent.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-8">No recent activity. Start by verifying some news!</p>';
+        profileContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No recent activity</p>';
+        return;
+      }
+      
+      let html = '';
+      recent.forEach(item => {
+        const tagClass = item.result === 'TRUE' ? 'true' : 'false';
+        html += `
+          <div class="history-item">
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="font-bold text-gray-800">${item.title.substring(0, 50)}...</h4>
+              <span class="result-tag ${tagClass}">${item.result}</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-2">${item.date}</p>
+            <p class="text-gray-500 text-sm">${item.content.substring(0, 100)}...</p>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+      profileContainer.innerHTML = html;
+    }
+
+    function updateHistoryDisplay() {
+      const container = document.getElementById('historyContainer');
+      
+      if (appState.history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <i class="fas fa-history text-4xl mb-4"></i>
+            <p>No verification history yet</p>
+            <p class="text-sm mt-2">Start by verifying some news in the Detection section</p>
+            <button class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-page="detection">
+              Go to Detection
+            </button>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      appState.history.forEach(item => {
+        const tagClass = item.result === 'TRUE' ? 'true' : 'false';
+        const icon = item.result === 'TRUE' ? 'fa-check-circle text-green-500' : 'fa-times-circle text-red-500';
+        
+        html += `
+          <div class="history-item">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <i class="fas ${icon} mr-3"></i>
+                  <h4 class="font-bold text-gray-800">${item.title}</h4>
+                </div>
+                <p class="text-gray-600 text-sm mb-3">${item.content.substring(0, 150)}...</p>
+                <div class="flex items-center text-sm text-gray-500">
+                  <span class="mr-4"><i class="far fa-calendar mr-1"></i>${item.date}</span>
+                  <span><i class="fas fa-map-marker-alt mr-1"></i>${item.location || 'No location'}</span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <span class="result-tag ${tagClass}">${item.result}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // Detection Page Functions
+    function setupDetectionPage() {
+      const newsForm = document.getElementById('newsForm');
+      const sampleRealBtn = document.getElementById('sampleRealBtn');
+      const sampleFakeBtn = document.getElementById('sampleFakeBtn');
+      const analyzeAgainBtn = document.getElementById('analyzeAgainBtn');
+      const loadExampleBtns = document.querySelectorAll('.load-example-btn');
+
+      // Load example news
+      loadExampleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const title = this.getAttribute('data-title');
+          const content = this.getAttribute('data-content');
+          const location = this.getAttribute('data-location');
+          
+          document.getElementById('newsTitle').value = title;
+          document.getElementById('newsContent').value = content;
+          document.getElementById('newsLocation').value = location;
+        });
+      });
+
+      // Sample buttons
+      if (sampleRealBtn) {
+        sampleRealBtn.addEventListener('click', function() {
+          document.getElementById('newsTitle').value = "Heavy rainfall alert issued for coastal regions";
+          document.getElementById('newsContent').value = "The India Meteorological Department has issued a heavy rainfall alert for coastal regions over the next 48 hours. Fishermen are advised not to venture into the sea. Authorities are monitoring the situation and will provide updates.";
+          document.getElementById('newsLocation').value = "Coastal Regions";
+        });
+      }
+
+      if (sampleFakeBtn) {
+        sampleFakeBtn.addEventListener('click', function() {
+          document.getElementById('newsTitle').value = "BREAKING: Tsunami warning for Mumbai!";
+          document.getElementById('newsContent').value = "URGENT: Massive tsunami expected to hit Mumbai in next 2 hours! Government hiding information! Thousands will die! SHARE THIS WITH EVERYONE NOW! Mainstream media silent!";
+          document.getElementById('newsLocation').value = "Mumbai";
+        });
+      }
+
+      // Analyze news
+      if (newsForm) {
+        newsForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const title = document.getElementById('newsTitle').value;
+          const content = document.getElementById('newsContent').value;
+          const location = document.getElementById('newsLocation').value;
+          
+          if (!title || !content) {
+            alert('Please enter both title and content');
+            return;
+          }
+          
+          analyzeNews(title, content, location);
+        });
+      }
+
+      // Analyze again
+      if (analyzeAgainBtn) {
+        analyzeAgainBtn.addEventListener('click', function() {
+          resetAnalysis();
+          document.getElementById('newsTitle').value = '';
+          document.getElementById('newsContent').value = '';
+          document.getElementById('newsLocation').value = '';
+        });
+      }
+    }
+
+    async function analyzeNews(title, content, location) {
+      const analysisSection = document.getElementById('analysisSection');
+      analysisSection.classList.remove('hidden');
+      
+      // Step 1: Content Analysis
+      await runStep(1, 'content', () => {
+        return appState.detector.analyzeContent(title, content);
+      });
+      
+      // Step 2: Source Verification
+      await runStep(2, 'source', () => {
+        return appState.detector.verifySource(title, content, location);
+      });
+      
+      // Step 3: Fact Checking
+      await runStep(3, 'fact', () => {
+        return appState.detector.checkFacts(title, content);
+      });
+      
+      // Step 4: AI Pattern Recognition
+      await runStep(4, 'ai', () => {
+        return appState.detector.analyzePatterns(title, content);
+      });
+      
+      // Get overall result
+      const contentResults = appState.detector.analyzeContent(title, content);
+      const sourceResults = appState.detector.verifySource(title, content, location);
+      const factResults = appState.detector.checkFacts(title, content);
+      const aiResults = appState.detector.analyzePatterns(title, content);
+      
+      const steps = {
+        content: contentResults,
+        source: sourceResults,
+        fact: factResults,
+        ai: aiResults
+      };
+      
+      const overall = appState.detector.getOverallResult(steps);
+      
+      // Save to history
+      const historyItem = {
+        id: Date.now(),
+        title: title,
+        content: content.substring(0, 200) + '...',
+        location: location,
+        result: overall.result,
+        date: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        steps: steps
+      };
+      
+      appState.history.unshift(historyItem);
+      localStorage.setItem('truthGuardHistory', JSON.stringify(appState.history));
+      
+      // Update displays
+      updateStats();
+      updateHistoryDisplay();
+      
+      // Show final result
+      await showFinalResult(overall, steps);
+    }
+
+    async function runStep(stepNumber, stepName, analysisFunction) {
+      const stepElement = document.getElementById(`step${stepNumber}`);
+      const progressBar = document.getElementById(`${stepName}Progress`);
+      const resultsDiv = document.getElementById(`${stepName}Results`);
+      
+      stepElement.style.opacity = '0.7';
+      await animateProgress(progressBar, 100, 1000);
+      
+      const results = analysisFunction();
+      displayStepResults(stepName, results);
+      resultsDiv.classList.remove('hidden');
+      stepElement.style.opacity = '1';
+      
+      return results;
+    }
+
+    function animateProgress(bar, target, duration) {
+      return new Promise(resolve => {
+        let start = 0;
+        const increment = target / (duration / 10);
+        
+        const timer = setInterval(() => {
+          start += increment;
+          bar.style.width = `${Math.min(start, target)}%`;
+          
+          if (start >= target) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 10);
+      });
+    }
+
+    function displayStepResults(stepName, results) {
+      switch(stepName) {
+        case 'content':
+          document.getElementById('toneResult').textContent = results.tone;
+          document.getElementById('toneResult').className = 
+            results.tone === 'Professional' ? 'px-3 py-1 rounded-full text-sm bg-green-100 text-green-800' :
+            results.tone === 'Sensational' ? 'px-3 py-1 rounded-full text-sm bg-red-100 text-red-800' :
+            'px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800';
+          
+          const keywordsContainer = document.getElementById('keywordsContainer');
+          keywordsContainer.innerHTML = '';
+          results.detectedKeywords.forEach(keyword => {
+            const badge = document.createElement('span');
+            badge.className = `keyword-badge ${keyword.type}`;
+            badge.textContent = keyword.word.substring(0, 20);
+            keywordsContainer.appendChild(badge);
+          });
+          
+          document.getElementById('contentVerdict').textContent = results.verdict;
+          break;
+          
+        case 'source':
+          document.getElementById('sourceCheck').textContent = results.sourceCheck;
+          document.getElementById('sourceCheck').className = 
+            results.sourceCheck.includes('✅') ? 'px-3 py-1 rounded-full text-sm bg-green-100 text-green-800' :
+            'px-3 py-1 rounded-full text-sm bg-red-100 text-red-800';
+          
+          document.getElementById('locationCheck').textContent = results.locationCheck;
+          document.getElementById('locationCheck').className = 
+            results.locationCheck.includes('✅') ? 'px-3 py-1 rounded-full text-sm bg-green-100 text-green-800' :
+            results.locationCheck.includes('⚠️') ? 'px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800' :
+            'px-3 py-1 rounded-full text-sm bg-red-100 text-red-800';
+          
+          document.getElementById('sourceVerdict').textContent = results.verdict;
+          break;
+          
+        case 'fact':
+          const factContainer = document.getElementById('factChecksContainer');
+          factContainer.innerHTML = '';
+          
+          results.checks.forEach(check => {
+            const div = document.createElement('div');
+            div.className = `fact-check-item ${check.result.includes('✅') ? 'verified' : 'failed'}`;
+            div.innerHTML = `
+              <div class="font-medium">${check.claim}</div>
+              <div class="flex justify-between mt-1">
+                <span class="text-sm text-gray-600">${check.details}</span>
+                <span class="font-medium ${check.result.includes('✅') ? 'text-green-600' : 'text-red-600'}">
+                  ${check.result}
+                </span>
+              </div>
+            `;
+            factContainer.appendChild(div);
+          });
+          
+          document.getElementById('factVerdict').textContent = results.verdict;
+          break;
+          
+        case 'ai':
+          document.getElementById('patternMatch').textContent = results.patternMatch;
+          document.getElementById('patternMatch').className = 
+            results.patternMatch.includes('Normal') ? 'px-3 py-1 rounded-full text-sm bg-green-100 text-green-800' :
+            results.patternMatch.includes('Suspicious') || results.patternMatch.includes('Fake') ? 
+              'px-3 py-1 rounded-full text-sm bg-red-100 text-red-800' :
+              'px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800';
+          
+          document.getElementById('aiConfidence').textContent = results.confidence;
+          document.getElementById('aiConfidence').className = 
+            results.confidence === 'High' ? 'text-green-600' :
+            results.confidence === 'Medium' ? 'text-yellow-600' : 'text-red-600';
+          
+          document.getElementById('aiVerdict').textContent = results.verdict;
+          break;
+      }
+    }
+
+    async function showFinalResult(overall, steps) {
+      document.getElementById('sumContent').textContent = steps.content.verdict;
+      document.getElementById('sumSource').textContent = steps.source.verdict;
+      document.getElementById('sumFact').textContent = steps.fact.verdict;
+      document.getElementById('sumAI').textContent = steps.ai.verdict;
+      
+      document.getElementById('resultIcon').innerHTML = `<i class="fas ${overall.icon} ${overall.color}"></i>`;
+      document.getElementById('resultTag').textContent = overall.result;
+      document.getElementById('resultTag').className = `result-tag ${overall.tag}`;
+      document.getElementById('resultTitle').textContent = overall.result === 'TRUE' ? '✅ REAL NEWS DETECTED' :
+                                                         overall.result === 'PARTIALLY TRUE' ? '⚠️ MIXED ACCURACY' :
+                                                         '❌ FAKE NEWS DETECTED';
+      document.getElementById('resultDescription').textContent = overall.description;
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      document.getElementById('finalResult').classList.remove('hidden');
+      document.getElementById('finalResult').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetAnalysis() {
+      const analysisSection = document.getElementById('analysisSection');
+      const finalResult = document.getElementById('finalResult');
+      
+      if (analysisSection) analysisSection.classList.add('hidden');
+      if (finalResult) finalResult.classList.add('hidden');
+      
+      ['content', 'source', 'fact', 'ai'].forEach(type => {
+        const progress = document.getElementById(`${type}Progress`);
+        const results = document.getElementById(`${type}Results`);
+        if (progress) progress.style.width = '0%';
+        if (results) results.classList.add('hidden');
+      });
+    }
+
+    // Trending news verification
+    function verifyTrendingNews(newsId) {
+      let title, content, location;
+      
+      switch(newsId) {
+        case 1:
+          title = "Climate Summit Achieves Breakthrough Agreement";
+          content = "World leaders reach historic climate agreement with concrete targets for carbon reduction and renewable energy investment. The agreement was reached after two weeks of intense negotiations at the UN Climate Summit.";
+          location = "Global";
+          break;
+        case 2:
+          title = "New Study Claims Coffee Increases Lifespan";
+          content = "Groundbreaking research from Harvard University suggests drinking 3 cups of coffee daily can extend life expectancy by up to 5 years. The study followed 200,000 participants over 20 years.";
+          location = "Harvard University";
+          break;
+        case 4:
+          title = "BREAKING: Major Airport Shutdown Due to Security Threat";
+          content = "URGENT: International airport closed indefinitely after suspected security breach. Officials refuse to comment on the nature of the threat. Travelers advised to avoid the area.";
+          location = "Airport";
+          break;
+      }
+      
+      document.getElementById('newsTitle').value = title;
+      document.getElementById('newsContent').value = content;
+      document.getElementById('newsLocation').value = location;
+      
+      navigateTo('detection');
+    }
+
+    // Feed category switching
+    document.querySelectorAll('.feed-category').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.feed-category').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+  </script>
+</body>
+</html>

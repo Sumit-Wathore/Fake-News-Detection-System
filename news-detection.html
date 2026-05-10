@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Detection - FNDV</title>
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="news-detection.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo-text">FNDV</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>🔍 News Detection</h1>
+    <p>Enter any news headline or content and instantly check if it’s real or fake using AI-powered detection.</p>
+  </section>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h2>Try Fake News Detection</h2>
+    <p>Type or paste a news headline below and click on "Check Now".</p>
+    <div class="input-box">
+      <input type="text" id="newsInput" placeholder="Enter news headline...">
+      <button class="btn-check" onclick="checkNews()">Check Now</button>
+    </div>
+    <div id="resultBox" class="result-box"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 FNDV - Fake News Detection & Verification
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function checkNews() {
+      const input = document.getElementById("newsInput").value.trim();
+      const resultBox = document.getElementById("resultBox");
+
+      if (input === "") {
+        resultBox.style.display = "block";
+        resultBox.className = "result-box fake";
+        resultBox.textContent = "⚠️ Please enter a news headline.";
+        return;
+      }
+
+      // Demo logic (can be replaced with backend/AI model)
+      if (input.toLowerCase().includes("rumor") || input.toLowerCase().includes("fake")) {
+        resultBox.style.display = "block";
+        resultBox.className = "result-box fake";
+        resultBox.textContent = "❌ This news seems Fake!";
+      } else {
+        resultBox.style.display = "block";
+        resultBox.className = "result-box real";
+        resultBox.textContent = "✅ This news looks Real!";
+      }
+    }
+  </script>
+</body>
+</html>

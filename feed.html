@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Fake News Feed - TruthDetect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #7d42f4;
+            --primary-dark: #6a2fd6;
+            --secondary: #1a73e8;
+            --accent: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc05;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-login:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Feed Layout */
+        .feed-page {
+            padding: 2rem 0;
+        }
+
+        .feed-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Create Post */
+        .create-post {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .post-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .post-form {
+            flex: 1;
+        }
+
+        .post-textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            resize: none;
+            min-height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .action-btn:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .post-btn {
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .post-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Feed Posts */
+        .feed-posts {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .post-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info h4 {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-info p {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        .post-content {
+            padding: 1rem 1.5rem;
+        }
+
+        .post-text {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .post-media {
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .post-video {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .fake-news-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(234, 67, 53, 0.1);
+            color: var(--danger);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 1.5rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        .post-engagement {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .engagement-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px 12px;
+            border-radius: 6px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .engagement-btn:hover {
+            background: var(--light);
+        }
+
+        .engagement-btn.active {
+            color: var(--primary);
+        }
+
+        .engagement-btn.liked {
+            color: var(--danger);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .trending-news {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .trending-news h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+
+        .trending-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-meta {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .trending-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .trending-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .fake-news-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: rgba(234, 67, 53, 0.1);
+            color: var(--danger);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .suggested-pages {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .suggested-pages h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+
+        .page-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 0;
+        }
+
+        .page-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .page-info {
+            flex: 1;
+        }
+
+        .page-info h4 {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .page-info p {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .follow-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .follow-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Refresh Button */
+        .refresh-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .refresh-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .refresh-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .refresh-btn.spinning i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid var(--accent);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        /* Upload Section */
+        .upload-preview {
+            margin: 1rem 0;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        .upload-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links, .auth-buttons {
+                display: none;
+            }
+
+            .feed-container {
+                grid-template-columns: 1fr;
+            }
+
+            .post-actions {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <div class="logo-icon">FND</div>
+                    <div class="logo-text">TruthDetect India</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="feed.html">Feed</a></li>
+                    <li><a href="Indianews.html">Indian News</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="feed-page">
+        <div class="container">
+            <div class="refresh-container">
+                <button class="refresh-btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh Feed
+                </button>
+            </div>
+
+            <div class="feed-container">
+                <div class="feed-main">
+                    <div class="create-post">
+                        <div class="post-input">
+                            <div class="user-avatar">U</div>
+                            <div class="post-form">
+                                <textarea class="post-textarea" placeholder="Share fake news you encountered in India..." id="postText"></textarea>
+                                
+                                <div class="upload-preview" id="uploadPreview">
+                                    <img id="previewImage" src="" alt="Preview">
+                                </div>
+                                
+                                <div class="post-actions">
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="document.getElementById('imageUpload').click()">
+                                            <i class="fas fa-image"></i> Photo
+                                        </button>
+                                        <button class="action-btn">
+                                            <i class="fas fa-video"></i> Video
+                                        </button>
+                                        <button class="action-btn">
+                                            <i class="fas fa-link"></i> Link
+                                        </button>
+                                        <button class="action-btn">
+                                            <i class="fas fa-map-marker-alt"></i> Location
+                                        </button>
+                                    </div>
+                                    <button class="post-btn" onclick="createPost()">Post</button>
+                                </div>
+                                <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feed-posts" id="feedPosts">
+                        <!-- Indian fake news posts will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="trending-news">
+                        <h3>Trending in India</h3>
+                        <div id="trendingList">
+                            <!-- Trending Indian fake news will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <div class="suggested-pages">
+                        <h3>Indian Fact-Checkers</h3>
+                        <div id="suggestedPages">
+                            <!-- Indian fact-checking pages will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title" id="notifTitle">Success</div>
+            <div class="notification-message" id="notifMessage">Feed updated with new content!</div>
+        </div>
+        <button class="notification-close" id="notifClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script>
+        // Indian fake news data
+        const indianFeedPosts = [
+            {
+                id: 1,
+                user: {
+                    name: "Rahul Sharma",
+                    avatar: "RS",
+                    verified: true
+                },
+                timestamp: "2 hours ago",
+                location: "Delhi, India",
+                content: "Just saw this viral WhatsApp forward claiming that the Indian government is giving free laptops to students. This is completely false and has been debunked by official sources.",
+                media: {
+                    type: "image",
+                    url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTIwLjUgM0g0LjVDMy42NzIgMyAzIDMuNjcyIDMgNC41VjE5LjVDMyAyMC4zMjggMy42NzIgMjEgNC41IDIxSDE5LjVDMjAuMzI4IDIxIDIxIDIwLjMyOCAyMSAxOS41VjcuNUwyMC41IDdaTTE5IDE5SDRWNWgxMXY0aDRWMTlaIi8+PC9zdmc+PC9zdmc+"
+                },
+                fakeNews: true,
+                analysis: "Our AI detected 94% probability of misinformation",
+                likes: 124,
+                comments: 42,
+                shares: 18,
+                userLiked: false,
+                userShared: false
+            },
+            {
+                id: 2,
+                user: {
+                    name: "Priya Patel",
+                    avatar: "PP",
+                    verified: true
+                },
+                timestamp: "5 hours ago",
+                location: "Mumbai, India",
+                content: "This viral image claiming to show a political leader's secret bank account is actually photoshopped. The original image has been verified as fake.",
+                media: {
+                    type: "image",
+                    url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6TTkuNSAxNlY4bDYgNGwtNiA0eiIvPjwvc3ZnPjwvc3ZnPg=="
+                },
+                fakeNews: true,
+                analysis: "Image manipulation detected with 87% confidence",
+                likes: 89,
+                comments: 23,
+                shares: 12,
+                userLiked: true,
+                userShared: false
+            },
+            {
+                id: 3,
+                user: {
+                    name: "Amit Kumar",
+                    avatar: "AK",
+                    verified: false
+                },
+                timestamp: "1 day ago",
+                location: "Bangalore, India",
+                content: "There's a false rumor circulating that a popular Indian celebrity has invested in a fraudulent crypto scheme. This is completely untrue - the celebrity has issued an official denial.",
+                media: null,
+                fakeNews: true,
+                analysis: "Celebrity scam hoax - 96% probability of false information",
+                likes: 215,
+                comments: 67,
+                shares: 45,
+                userLiked: false,
+                userShared: true
+            }
+        ];
+
+        const indianTrendingNews = [
+            {
+                id: 1,
+                source: "WhatsApp",
+                title: "False COVID medicine claims spreading",
+                engagement: "45.2K shares",
+                fake: true
+            },
+            {
+                id: 2,
+                source: "Facebook",
+                title: "Fake government scheme announcements",
+                engagement: "32.7K shares",
+                fake: true
+            },
+            {
+                id: 3,
+                source: "Twitter",
+                title: "Manipulated political speeches viral",
+                engagement: "28.9K posts",
+                fake: true
+            },
+            {
+                id: 4,
+                source: "Instagram",
+                title: "Fake celebrity endorsement scams",
+                engagement: "25.4K reports",
+                fake: true
+            }
+        ];
+
+        const indianFactCheckers = [
+            {
+                id: 1,
+                name: "Alt News",
+                avatar: "AN",
+                category: "Fact Checking",
+                followers: "1.2M"
+            },
+            {
+                id: 2,
+                name: "BoomLive",
+                avatar: "BL",
+                category: "Myth Debunking",
+                followers: "980K"
+            },
+            {
+                id: 3,
+                name: "Vishvas News",
+                avatar: "VN",
+                category: "News Verification",
+                followers: "850K"
+            },
+            {
+                id: 4,
+                name: "FactChecker.in",
+                avatar: "FC",
+                category: "Public Policy",
+                followers: "750K"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedPostsContainer = document.getElementById('feedPosts');
+            const trendingList = document.getElementById('trendingList');
+            const suggestedPagesContainer = document.getElementById('suggestedPages');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const notification = document.getElementById('notification');
+            const notifTitle = document.getElementById('notifTitle');
+            const notifMessage = document.getElementById('notifMessage');
+            const notifClose = document.getElementById('notifClose');
+
+            // Load initial content
+            loadFeedPosts();
+            loadTrendingNews();
+            loadSuggestedPages();
+
+            // Refresh button functionality
+            refreshBtn.addEventListener('click', function() {
+                refreshBtn.disabled = true;
+                refreshBtn.classList.add('spinning');
+                
+                setTimeout(() => {
+                    refreshFeed();
+                    refreshBtn.disabled = false;
+                    refreshBtn.classList.remove('spinning');
+                    showNotification('Feed Updated', 'New Indian fake news content has been added!');
+                }, 2000);
+            });
+
+            // Close notification
+            notifClose.addEventListener('click', function() {
+                notification.classList.remove('show');
+            });
+
+            function loadFeedPosts() {
+                feedPostsContainer.innerHTML = '';
+                
+                indianFeedPosts.forEach(post => {
+                    const postElement = createPostElement(post);
+                    feedPostsContainer.appendChild(postElement);
+                });
+            }
+
+            function loadTrendingNews() {
+                trendingList.innerHTML = '';
+                
+                indianTrendingNews.forEach(item => {
+                    const trendingElement = document.createElement('div');
+                    trendingElement.className = 'trending-item';
+                    trendingElement.innerHTML = `
+                        <div class="trending-meta">
+                            <span>${item.source}</span>
+                            ${item.fake ? '<span class="fake-news-badge"><i class="fas fa-times-circle"></i> Fake</span>' : ''}
+                        </div>
+                        <div class="trending-title">${item.title}</div>
+                        <div class="trending-stats">
+                            <span>${item.engagement}</span>
+                        </div>
+                    `;
+                    trendingList.appendChild(trendingElement);
+                });
+            }
+
+            function loadSuggestedPages() {
+                suggestedPagesContainer.innerHTML = '';
+                
+                indianFactCheckers.forEach(page => {
+                    const pageElement = document.createElement('div');
+                    pageElement.className = 'page-item';
+                    pageElement.innerHTML = `
+                        <div class="page-avatar">${page.avatar}</div>
+                        <div class="page-info">
+                            <h4>${page.name}</h4>
+                            <p>${page.category} • ${page.followers} followers</p>
+                        </div>
+                        <button class="follow-btn">Follow</button>
+                    `;
+                    suggestedPagesContainer.appendChild(pageElement);
+                });
+            }
+
+            function createPostElement(post) {
+                const postElement = document.createElement('div');
+                postElement.className = 'post-card';
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-user">
+                            <div class="user-avatar">${post.user.avatar}</div>
+                            <div class="user-info">
+                                <h4>${post.user.name} ${post.user.verified ? '<i class="fas fa-check-circle" style="color: var(--primary);"></i>' : ''}</h4>
+                                <p>${post.timestamp} • ${post.location}</p>
+                            </div>
+                        </div>
+                        <div class="post-meta">
+                            <i class="fas fa-globe-asia"></i>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        ${post.fakeNews ? `
+                            <div class="fake-news-indicator">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Potential Fake News Detected
+                            </div>
+                        ` : ''}
+                        <div class="post-text">${post.content}</div>
+                        ${post.media ? `
+                            <div class="post-media">
+                                ${post.media.type === 'image' ? 
+                                    `<img src="${post.media.url}" class="post-image" alt="Post image">` : 
+                                    `<div class="post-video">
+                                        <img src="${post.media.url}" class="post-image" alt="Video thumbnail">
+                                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play" style="color: white; font-size: 1.5rem;"></i>
+                                        </div>
+                                    </div>`
+                                }
+                            </div>
+                        ` : ''}
+                        ${post.analysis ? `
+                            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(251, 188, 5, 0.1); border-radius: 8px; border-left: 4px solid var(--warning);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                    <i class="fas fa-robot" style="color: var(--warning);"></i>
+                                    <strong>AI Analysis</strong>
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--dark);">${post.analysis}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="post-stats">
+                        <span>${post.likes} likes</span>
+                        <span>${post.comments} comments • ${post.shares} shares</span>
+                    </div>
+                    <div class="post-engagement">
+                        <button class="engagement-btn ${post.userLiked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                            <i class="fas fa-thumbs-up"></i> Like
+                        </button>
+                        <button class="engagement-btn" onclick="focusComment(${post.id})">
+                            <i class="fas fa-comment"></i> Comment
+                        </button>
+                        <button class="engagement-btn ${post.userShared ? 'active' : ''}" onclick="toggleShare(${post.id})">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                        <button class="engagement-btn" onclick="analyzePost(${post.id})">
+                            <i class="fas fa-search"></i> Analyze
+                        </button>
+                    </div>
+                `;
+                return postElement;
+            }
+
+            function refreshFeed() {
+                // Simulate fetching new Indian fake news content
+                const newPost = {
+                    id: Date.now(),
+                    user: {
+                        name: "News Monitor India",
+                        avatar: "NM",
+                        verified: true
+                    },
+                    timestamp: "Just now",
+                    location: "Chennai, India",
+                    content: "New fake news alert: A false story about bank holidays is circulating on social media. RBI has confirmed all banks will operate normally.",
+                    media: {
+                        type: "image",
+                        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bS0yIDE1bC01LTUgMS40MS0xLjQxTDEwIDE0LjE3bDcuNTktNy41OUwxOSA4bC05IDl6Ii8+PC9zdmc+PC9zdmc+"
+                    },
+                    fakeNews: true,
+                    analysis: "Financial misinformation detected with 91% confidence",
+                    likes: 0,
+                    comments: 0,
+                    shares: 0,
+                    userLiked: false,
+                    userShared: false
+                };
+
+                const newPostElement = createPostElement(newPost);
+                feedPostsContainer.insertBefore(newPostElement, feedPostsContainer.firstChild);
+
+                // Limit to 10 posts
+                if (feedPostsContainer.children.length > 10) {
+                    feedPostsContainer.removeChild(feedPostsContainer.lastChild);
+                }
+            }
+
+            function showNotification(title, message) {
+                notifTitle.textContent = title;
+                notifMessage.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+        });
+
+        // Image upload and preview
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('previewImage');
+            const previewContainer = document.getElementById('uploadPreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Create new post
+        function createPost() {
+            const postText = document.getElementById('postText').value;
+            const imageUpload = document.getElementById('imageUpload');
+            
+            if (!postText.trim() && !imageUpload.files[0]) {
+                showNotification('Error', 'Please add some text or an image to your post');
+                return;
+            }
+            
+            const newPost = {
+                id: Date.now(),
+                user: {
+                    name: "You",
+                    avatar: "U",
+                    verified: true
+                },
+                timestamp: "Just now",
+                location: "Your Location",
+                content: postText,
+                media: imageUpload.files[0] ? {
+                    type: "image",
+                    url: URL.createObjectURL(imageUpload.files[0])
+                } : null,
+                fakeNews: true,
+                analysis: "Analysis pending...",
+                likes: 0,
+                comments: 0,
+                shares: 0,
+                userLiked: false,
+                userShared: false
+            };
+
+            const feedPostsContainer = document.getElementById('feedPosts');
+            const newPostElement = createPostElement(newPost);
+            feedPostsContainer.insertBefore(newPostElement, feedPostsContainer.firstChild);
+
+            // Reset form
+            document.getElementById('postText').value = '';
+            document.getElementById('uploadPreview').style.display = 'none';
+            document.getElementById('imageUpload').value = '';
+            
+            showNotification('Posted', 'Your fake news report has been shared!');
+        }
+
+        // Global functions for post interactions
+        function toggleLike(postId) {
+            const likeBtn = event.target.closest('.engagement-btn');
+            likeBtn.classList.toggle('liked');
+            
+            if (likeBtn.classList.contains('liked')) {
+                showNotification('Liked', 'You liked this post');
+            }
+        }
+
+        function toggleShare(postId) {
+            const shareBtn = event.target.closest('.engagement-btn');
+            shareBtn.classList.toggle('active');
+            
+            if (shareBtn.classList.contains('active')) {
+                showNotification('Shared', 'Post shared to your network');
+            }
+        }
+
+        function analyzePost(postId) {
+            showNotification('Analysis Started', 'Post is being analyzed for authenticity...');
+            
+            setTimeout(() => {
+                showNotification('Analysis Complete', 'Detailed verification results are ready!');
+            }, 2000);
+        }
+
+        function focusComment(postId) {
+            showNotification('Comment', 'Comment section focused');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+/* Dashboard Custom Styling */
+
+/* Stat Cards */
+.stat-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: scale(1.05);
+}
+
+.stat-title {
+  color: #4b5563;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  color: #1d4ed8;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.stat-change {
+  display: block;
+  margin-top: 0.25rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Verification Item */
+.recent-verification-item {
+  transition: all 0.3s ease;
+}
+
+.recent-verification-item:hover {
+  transform: scale(1.01);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Verification Details */
+.verification-details {
+  display: none;
+  background-color: #f9fafb;
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 4px solid #6366f1;
+}
+
+.verification-header:hover {
+  color: #1e3a8a;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid #e5e7eb;
+}

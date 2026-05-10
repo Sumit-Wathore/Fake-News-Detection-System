@@ -1,0 +1,156 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #42a5f5, #26c6da, #ff7eb3, #ff758c);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
+  min-height: 100vh;
+  color: #333;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Header */
+header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-text {
+  font-size: 26px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ff7eb3, #42a5f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #444;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #42a5f5;
+}
+
+/* Hero section */
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+  color: #fff;
+}
+
+.hero h1 {
+  font-size: 36px;
+  font-weight: 900;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 700px;
+  margin: auto;
+  line-height: 1.6;
+}
+
+/* Main content */
+.content {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.content h2 {
+  color: #42a5f5;
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.content p {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Input and button */
+.input-box {
+  margin-top: 20px;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.btn-check {
+  display: inline-block;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #42a5f5, #26c6da);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-check:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Result messages */
+.result-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: none;
+}
+
+.fake {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.real {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #eee;
+}

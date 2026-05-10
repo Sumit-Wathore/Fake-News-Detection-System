@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repository - FNDV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+     Navigation 
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M10 12h12M10 16h8M10 20h10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#0ea5e9"/>
+                            <stop offset="100%" stop-color="#14b8a6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>FNDV</span>
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="alerts.html">Alerts</a>
+                <a href="repository.html" class="active">Repository</a>
+                <a href="prevention.html">Prevention</a>
+            </div>
+            
+            <a href="verify.html" class="btn-primary">Verify News</a>
+        </div>
+    </nav>
+
+     Repository Content 
+    <main class="repository-main">
+        <div class="container">
+            <div class="repository-header">
+                <h1>Trusted Data Repository</h1>
+                <p>Access our comprehensive database of verified facts and debunked misinformation</p>
+            </div>
+
+             Search Bar 
+            <div class="search-container">
+                <div class="search-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        placeholder="Search verified facts, debunked claims, or topics..."
+                        onkeyup="searchRepository(event)"
+                    >
+                </div>
+                <div class="search-filters">
+                    <select onchange="filterByCategory(this.value)">
+                        <option value="">All Categories</option>
+                        <option value="politics">Politics</option>
+                        <option value="health">Health</option>
+                        <option value="technology">Technology</option>
+                        <option value="business">Business</option>
+                        <option value="entertainment">Entertainment</option>
+                    </select>
+                    <select onchange="filterByStatus(this.value)">
+                        <option value="">All Status</option>
+                        <option value="verified">Verified True</option>
+                        <option value="debunked">Debunked</option>
+                        <option value="misleading">Misleading</option>
+                    </select>
+                </div>
+            </div>
+
+             Repository Items 
+            <div class="repository-grid">
+                <div class="repository-item verified">
+                    <div class="repo-header">
+                        <span class="repo-badge verified">✓ Verified</span>
+                        <span class="repo-date">Jan 15, 2025</span>
+                    </div>
+                    <h3>Government Education Policy Reform Announcement</h3>
+                    <p>Official government sources have confirmed new education policy reforms focusing on digital literacy and skill development programs.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Politics</span>
+                        <span class="repo-sources">5 sources verified</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item debunked">
+                    <div class="repo-header">
+                        <span class="repo-badge debunked">✗ Debunked</span>
+                        <span class="repo-date">Jan 14, 2025</span>
+                    </div>
+                    <h3>Miracle Cure for Diabetes Claim</h3>
+                    <p>Viral social media posts claiming a "miracle cure" for diabetes have been thoroughly debunked by medical experts and health authorities.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Health</span>
+                        <span class="repo-sources">8 fact-checks</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item verified">
+                    <div class="repo-header">
+                        <span class="repo-badge verified">✓ Verified</span>
+                        <span class="repo-date">Jan 13, 2025</span>
+                    </div>
+                    <h3>Tech Company AI Research Initiative Launch</h3>
+                    <p>Major technology company has officially announced a new AI research initiative with partnerships across leading universities.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Technology</span>
+                        <span class="repo-sources">12 sources verified</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item misleading">
+                    <div class="repo-header">
+                        <span class="repo-badge misleading">⚠ Misleading</span>
+                        <span class="repo-date">Jan 12, 2025</span>
+                    </div>
+                    <h3>Exaggerated Climate Change Statistics</h3>
+                    <p>Article contains accurate core information but uses misleading statistics and cherry-picked data to exaggerate climate change impacts.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Environment</span>
+                        <span class="repo-sources">6 fact-checks</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item debunked">
+                    <div class="repo-header">
+                        <span class="repo-badge debunked">✗ Debunked</span>
+                        <span class="repo-date">Jan 11, 2025</span>
+                    </div>
+                    <h3>Manipulated Political Rally Images</h3>
+                    <p>Digitally altered images showing inflated crowd sizes at political rallies have been identified and debunked with original photographs.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Politics</span>
+                        <span class="repo-sources">15 fact-checks</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item verified">
+                    <div class="repo-header">
+                        <span class="repo-badge verified">✓ Verified</span>
+                        <span class="repo-date">Jan 10, 2025</span>
+                    </div>
+                    <h3>Economic Growth Statistics Q4 2024</h3>
+                    <p>Official economic data released by government agencies confirms GDP growth figures for the fourth quarter of 2024.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Business</span>
+                        <span class="repo-sources">7 sources verified</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item debunked">
+                    <div class="repo-header">
+                        <span class="repo-badge debunked">✗ Debunked</span>
+                        <span class="repo-date">Jan 9, 2025</span>
+                    </div>
+                    <h3>Cryptocurrency Investment Scam</h3>
+                    <p>Fraudulent investment scheme promising guaranteed returns has been exposed. Multiple victims have reported financial losses.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Finance</span>
+                        <span class="repo-sources">20 reports</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+
+                <div class="repository-item misleading">
+                    <div class="repo-header">
+                        <span class="repo-badge misleading">⚠ Misleading</span>
+                        <span class="repo-date">Jan 8, 2025</span>
+                    </div>
+                    <h3>Sensationalized Weather Forecast Headlines</h3>
+                    <p>News outlets published exaggerated headlines about weather conditions that don't accurately reflect meteorological predictions.</p>
+                    <div class="repo-meta">
+                        <span class="repo-category">Weather</span>
+                        <span class="repo-sources">4 fact-checks</span>
+                    </div>
+                    <button class="btn-secondary btn-sm">View Full Report</button>
+                </div>
+            </div>
+
+             Pagination 
+            <div class="pagination">
+                <button class="btn-secondary" disabled>Previous</button>
+                <div class="page-numbers">
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span>...</span>
+                    <button class="page-btn">10</button>
+                </div>
+                <button class="btn-secondary">Next</button>
+            </div>
+        </div>
+    </main>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect width="32" height="32" rx="8" fill="url(#gradient2)"/>
+                            <path d="M10 12h12M10 16h8M10 20h10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32">
+                                    <stop offset="0%" stop-color="#0ea5e9"/>
+                                    <stop offset="100%" stop-color="#14b8a6"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>FNDV</span>
+                    </div>
+                    <p>Empowering truth in the digital age</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="verify.html">Verify News</a>
+                        <a href="dashboard.html">Dashboard</a>
+                        <a href="alerts.html">Alerts</a>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="repository.html">Repository</a>
+                        <a href="prevention.html">Prevention</a>
+                        <a href="#">Documentation</a>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#">About</a>
+                        <a href="#">Contact</a>
+                        <a href="#">Privacy</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 FNDV. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

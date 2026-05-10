@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Indian Chronicle - National Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        :root {
+            --primary: #8B0000;
+            --primary-dark: #660000;
+            --secondary: #2F4F4F;
+            --accent: #DAA520;
+            --light: #F8F8FF;
+            --dark: #2C2C2C;
+            --gray: #696969;
+            --border: #D3D3D3;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #F5F5F5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .newspaper-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 0;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .newspaper-title {
+            text-align: center;
+            flex: 1;
+        }
+
+        .newspaper-title h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .newspaper-title p {
+            font-size: 1.2rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .city-selector {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .city-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            color: var(--dark);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            display: none;
+            z-index: 100;
+        }
+
+        .city-dropdown.show {
+            display: block;
+        }
+
+        .city-option {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .city-option:hover {
+            background: #f0f0f0;
+        }
+
+        .city-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header-date {
+            text-align: right;
+            font-size: 1.1rem;
+        }
+
+        .header-nav {
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 0;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Premium Banner */
+        .premium-banner {
+            background: linear-gradient(45deg, var(--accent), #FFD700);
+            color: var(--dark);
+            padding: 0.5rem 0;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* City Highlights */
+        .city-highlights {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .city-highlights-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .city-highlights-header h2 {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .highlight-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: var(--transition);
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .highlight-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        /* Breaking News */
+        .breaking-news {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .breaking-news span {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        /* Front Page */
+        .front-page {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .front-page-header {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .front-page-header h2 {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .front-page-content {
+            padding: 1.5rem;
+        }
+
+        .main-story {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        .main-story-image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, var(--primary), #3B82F6);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-story-image::before {
+            content: "NATIONAL POLITICS";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            text-align: center;
+        }
+
+        .main-story h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            color: var(--primary);
+        }
+
+        .main-story p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .story-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--gray);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .read-more:hover {
+            color: var(--primary-dark);
+        }
+
+        .secondary-stories {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .story-card {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .story-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .story-card p {
+            font-size: 0.95rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-widget {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .widget-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .widget-header h3 {
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .widget-content {
+            padding: 1rem;
+        }
+
+        .weather-widget {
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-temp {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-desc {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .weather-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px dotted var(--border);
+        }
+
+        .market-indices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .index-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .index-name {
+            font-weight: 600;
+        }
+
+        .index-value {
+            font-weight: 700;
+        }
+
+        .index-change.positive {
+            color: #228B22;
+        }
+
+        .index-change.negative {
+            color: #DC143C;
+        }
+
+        .opinion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .opinion-item {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .opinion-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .opinion-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .opinion-author {
+            font-size: 0.875rem;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        /* Regional News Section */
+        .regional-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .regional-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .regional-header h2 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .regional-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .regional-content {
+            padding: 1.5rem;
+        }
+
+        .regional-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .regional-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .regional-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .regional-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary), #3B82F6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .regional-details {
+            padding: 1rem;
+            background: white;
+        }
+
+        .regional-details h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .regional-details p {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .regional-category {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        .newspaper-footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: #CCCCCC;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #AAAAAA;
+            font-size: 0.875rem;
+        }
+
+        /* Premium Badge */
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(45deg, var(--accent), #FFD700);
+            color: var(--dark);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .secondary-stories {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .newspaper-title h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="newspaper-header">
+        <div class="container">
+            <div class="header-top">
+                <div class="header-date">
+                    <p>Wednesday, March 20, 2024</p>
+                    <p>National Edition</p>
+                </div>
+                <div class="newspaper-title">
+                    <h1>The Indian Chronicle</h1>
+                    <p>Truth in Every Word - Since 1947</p>
+                </div>
+                <div class="city-selector" id="citySelector">
+                    <i class="fas fa-city"></i> 
+                    <span id="currentCity">MUMBAI</span>
+                    <i class="fas fa-chevron-down"></i>
+                    <div class="city-dropdown" id="cityDropdown">
+                        <div class="city-option active" data-city="mumbai">Mumbai</div>
+                        <div class="city-option" data-city="delhi">Delhi</div>
+                        <div class="city-option" data-city="chennai">Chennai</div>
+                        <div class="city-option" data-city="kolkata">Kolkata</div>
+                        <div class="city-option" data-city="bangalore">Bangalore</div>
+                        <div class="city-option" data-city="hyderabad">Hyderabad</div>
+                        <div class="city-option" data-city="nanded">Nanded</div>
+                        <div class="city-option" data-city="pune">Pune</div>
+                    </div>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">National</a></li>
+                    <li><a href="#">Politics</a></li>
+                    <li><a href="#">Business</a></li>
+                    <li><a href="#">Entertainment</a></li>
+                    <li><a href="#">Sports</a></li>
+                    <li><a href="#">Technology</a></li>
+                    <li><a href="#">Health</a></li>
+                    <li><a href="#">Opinion</a></li>
+                    <li><a href="#">Regional</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Premium Banner -->
+    <div class="premium-banner">
+        <div class="container">
+            <p><i class="fas fa-crown"></i> PREMIUM: Exclusive Coverage | Live Updates | In-depth Analysis</p>
+        </div>
+    </div>
+
+    <!-- City Highlights -->
+    <div class="container">
+        <div class="city-highlights">
+            <div class="city-highlights-header">
+                <i class="fas fa-map-marker-alt"></i>
+                <h2 id="cityName">Mumbai</h2>
+                <span>City Highlights</span>
+            </div>
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <h4>Local Transport</h4>
+                    <p id="transportText">Western Line: Running 7 mins late due to signal issues at Andheri</p>
+                    <div class="highlight-stats">
+                        <span id="transportUpdate">Updated: 8:15 AM</span>
+                        <span class="traffic-status" id="transportStatus">Moderate</span>
+                    </div>
+                </div>
+                <div class="highlight-card">
+                    <h4>Road Traffic</h4>
+                    <p id="trafficText">WE Highway: Heavy traffic between Borivali and Kandivali</p>
+                    <div class="highlight-stats">
+                        <span id="trafficUpdate">Updated: 8:20 AM</span>
+                        <span class="traffic-status" id="trafficStatus">Heavy</span>
+                    </div>
+                </div>
+                <div class="highlight-card">
+                    <h4>Air Quality</h4>
+                    <p id="aqiText">AQI: 156 - Moderate. Marine Drive area shows best air quality</p>
+                    <div class="highlight-stats">
+                        <span id="aqiUpdate">Updated: 8:00 AM</span>
+                        <span class="traffic-status" id="aqiStatus">Moderate</span>
+                    </div>
+                </div>
+                <div class="highlight-card">
+                    <h4>Weather</h4>
+                    <p id="weatherText">High: 34°C, Low: 26°C. Humidity: 78%</p>
+                    <div class="highlight-stats">
+                        <span id="weatherUpdate">Today's Forecast</span>
+                        <span class="traffic-status" id="weatherStatus">Pleasant</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breaking News -->
+    <div class="container">
+        <div class="breaking-news">
+            <span>Breaking</span>
+            <p id="breakingNewsText">Lok Sabha passes landmark education bill with 85% majority</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Front Page -->
+            <div class="front-page">
+                <div class="front-page-header">
+                    <h2>Today's National Edition</h2>
+                </div>
+                <div class="front-page-content">
+                    <div class="main-story">
+                        <div class="main-story-image"></div>
+                        <div class="story-meta">
+                            <span>Politics</span>
+                            <span>Exclusive</span>
+                            <span><i class="fas fa-crown"></i> Premium</span>
+                        </div>
+                        <h3>Government Announces New Economic Package to Boost Rural Employment</h3>
+                        <p>NEW DELHI: In a major move to address rural unemployment, the Central Government today announced a ₹50,000-crore economic package focused on creating jobs in agriculture and allied sectors. The package includes subsidies for small farmers, skill development programs, and infrastructure projects.</p>
+                        <p>Finance Minister Nirmala Sitharaman stated that the package will benefit over 10 million households across the country. "This is not just an economic measure, but a commitment to our rural economy and the backbone of our nation," she said during a press conference.</p>
+                        <a href="#" class="read-more">Read Full Story <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="secondary-stories">
+                        <div class="story-card">
+                            <h4>India's Space Agency to Launch Communication Satellite Next Month</h4>
+                            <p>ISRO announces the launch of GSAT-24, a new communication satellite that will enhance broadband services across the country.</p>
+                            <a href="#" class="read-more">Read More</a>
+                        </div>
+                        <div class="story-card">
+                            <h4>Monsoon Arrives Early in Kerala, Expected to Cover Entire Country Soon</h4>
+                            <p>The India Meteorological Department confirms early onset of monsoon, predicting normal rainfall across most regions.</p>
+                            <a href="#" class="read-more">Read More</a>
+                        </div>
+                        <div class="story-card">
+                            <h4>National Cricket Team Announces Squad for World Cup</h4>
+                            <p>Selectors name a 15-member squad with several young players making their debut in the prestigious tournament.</p>
+                            <a href="#" class="read-more">Read More</a>
+                        </div>
+                        <div class="story-card">
+                            <h4>Stock Markets Reach All-Time High Amid Positive Economic Indicators</h4>
+                            <p>Sensex crosses 75,000 mark for the first time as foreign investors continue to show confidence in Indian markets.</p>
+                            <a href="#" class="read-more">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <h3>National Weather</h3>
+                    </div>
+                    <div class="widget-content weather-widget">
+                        <div class="weather-icon">
+                            <i class="fas fa-cloud-sun"></i>
+                        </div>
+                        <div class="weather-temp" id="nationalTemp">32°C</div>
+                        <div class="weather-desc" id="nationalWeatherDesc">Partly Cloudy, Humid</div>
+                        <div class="weather-details">
+                            <div class="weather-detail">
+                                <span>Humidity</span>
+                                <span id="nationalHumidity">78%</span>
+                            </div>
+                            <div class="weather-detail">
+                                <span>Wind</span>
+                                <span id="nationalWind">15 km/h</span>
+                            </div>
+                            <div class="weather-detail">
+                                <span>Sunrise</span>
+                                <span>6:45 AM</span>
+                            </div>
+                            <div class="weather-detail">
+                                <span>Sunset</span>
+                                <span>6:58 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <h3>Market Watch</h3>
+                    </div>
+                    <div class="widget-content market-indices">
+                        <div class="index-item">
+                            <div class="index-name">Sensex</div>
+                            <div class="index-value">74,382.24</div>
+                            <div class="index-change positive">+1.24%</div>
+                        </div>
+                        <div class="index-item">
+                            <div class="index-name">Nifty 50</div>
+                            <div class="index-value">22,570.35</div>
+                            <div class="index-change positive">+1.15%</div>
+                        </div>
+                        <div class="index-item">
+                            <div class="index-name">Rupee/USD</div>
+                            <div class="index-value">83.12</div>
+                            <div class="index-change negative">-0.08%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <h3>National Opinion</h3>
+                    </div>
+                    <div class="widget-content opinion-list">
+                        <div class="opinion-item">
+                            <h4>India's Economic Growth Strategy</h4>
+                            <p class="opinion-author">By Dr. Rajesh Kumar, Economist</p>
+                        </div>
+                        <div class="opinion-item">
+                            <h4>The Future of Indian Democracy</h4>
+                            <p class="opinion-author">By Prof. Meera Desai, Political Analyst</p>
+                        </div>
+                        <div class="opinion-item">
+                            <h4>Climate Change and Indian Agriculture</h4>
+                            <p class="opinion-author">By Dr. Arvind Singh, Environmentalist</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regional News Section -->
+        <div class="regional-section">
+            <div class="regional-header">
+                <h2>Regional News</h2>
+                <p>Local Stories from Across India</p>
+            </div>
+            <div class="regional-content">
+                <div class="regional-grid">
+                    <div class="regional-card">
+                        <div class="regional-image" style="background: linear-gradient(45deg, #1E3A8A, #3B82F6);">
+                            <span>MUMBAI NEWS</span>
+                        </div>
+                        <div class="regional-details">
+                            <span class="regional-category">Infrastructure</span>
+                            <h4>Mumbai Coastal Road Project Nears Completion</h4>
+                            <p>The ambitious ₹12,000-crore Coastal Road project is in its final stages, with the first phase expected to open by May 2024.</p>
+                            <a href="#" class="read-more">Read Story</a>
+                        </div>
+                    </div>
+                    <div class="regional-card">
+                        <div class="regional-image" style="background: linear-gradient(45deg, #059669, #10B981);">
+                            <span>DELHI NEWS</span>
+                        </div>
+                        <div class="regional-details">
+                            <span class="regional-category">Environment</span>
+                            <h4>Delhi's Air Quality Shows Improvement</h4>
+                            <p>Due to recent policy measures and favorable weather conditions, Delhi's AQI has improved significantly over the past month.</p>
+                            <a href="#" class="read-more">Read Story</a>
+                        </div>
+                    </div>
+                    <div class="regional-card">
+                        <div class="regional-image" style="background: linear-gradient(45deg, #7C3AED, #8B5CF6);">
+                            <span>CHENNAI NEWS</span>
+                        </div>
+                        <div class="regional-details">
+                            <span class="regional-category">Culture</span>
+                            <h4>Chennai Music Season Attracts Global Audience</h4>
+                            <p>The annual Chennai Music Season has begun with participation from over 500 artists and musicians from around the world.</p>
+                            <a href="#" class="read-more">Read Story</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="newspaper-footer">
+            </div>
+            <div class="footer-bottom">
+                <p>The Indian Chronicle - National Edition. All rights reserved. | <a href="#" style="color: #CCCCCC;">Privacy Policy</a> | <a href="#" style="color: #CCCCCC;">Terms of Service</a></p>
+                <p>Registered with the Registrar of Newspapers for India under No. ENG/2024/67890</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // City data
+        const cityData = {
+            mumbai: {
+                name: "Mumbai",
+                transport: "Western Line: Running 7 mins late due to signal issues at Andheri",
+                traffic: "WE Highway: Heavy traffic between Borivali and Kandivali",
+                aqi: "AQI: 156 - Moderate. Marine Drive area shows best air quality",
+                weather: "High: 34°C, Low: 26°C. Humidity: 78%",
+                breakingNews: "Mumbai Metro Line 3 to open for public next month; trial runs successful",
+                temp: "32°C",
+                weatherDesc: "Partly Cloudy, Humid",
+                humidity: "78%",
+                wind: "15 km/h"
+            },
+            delhi: {
+                name: "Delhi",
+                transport: "Delhi Metro: All lines running on time with normal frequency",
+                traffic: "Ring Road: Moderate traffic near Dhaula Kuan",
+                aqi: "AQI: 210 - Poor. Use masks if going outdoors",
+                weather: "High: 38°C, Low: 28°C. Humidity: 45%",
+                breakingNews: "Delhi government announces new water conservation policy",
+                temp: "38°C",
+                weatherDesc: "Sunny, Dry",
+                humidity: "45%",
+                wind: "12 km/h"
+            },
+            chennai: {
+                name: "Chennai",
+                transport: "MRTS: Services running smoothly with no delays reported",
+                traffic: "Anna Salai: Light traffic, all signals functional",
+                aqi: "AQI: 95 - Satisfactory. Coastal breeze improving air quality",
+                weather: "High: 36°C, Low: 28°C. Humidity: 70%",
+                breakingNews: "Chennai's new IT corridor to create 50,000 jobs",
+                temp: "36°C",
+                weatherDesc: "Partly Cloudy, Breezy",
+                humidity: "70%",
+                wind: "18 km/h"
+            },
+            kolkata: {
+                name: "Kolkata",
+                transport: "Metro Railway: Normal services on both North-South and East-West lines",
+                traffic: "EM Bypass: Heavy traffic during peak hours",
+                aqi: "AQI: 180 - Moderate. Improvement expected with evening breeze",
+                weather: "High: 35°C, Low: 27°C. Humidity: 75%",
+                breakingNews: "Kolkata Book Fair breaks attendance records",
+                temp: "35°C",
+                weatherDesc: "Hazy, Humid",
+                humidity: "75%",
+                wind: "10 km/h"
+            },
+            bangalore: {
+                name: "Bangalore",
+                transport: "Namma Metro: Green Line delayed by 10 minutes due to technical issue",
+                traffic: "Outer Ring Road: Heavy traffic from Silk Board to Marathahalli",
+                aqi: "AQI: 120 - Moderate. Pleasant weather conditions",
+                weather: "High: 30°C, Low: 20°C. Humidity: 65%",
+                breakingNews: "Bangalore's tech parks see 30% increase in occupancy",
+                temp: "30°C",
+                weatherDesc: "Pleasant, Breezy",
+                humidity: "65%",
+                wind: "14 km/h"
+            },
+            hyderabad: {
+                name: "Hyderabad",
+                transport: "MMTS: All trains running on schedule with normal frequency",
+                traffic: "HITEC City: Moderate traffic during office hours",
+                aqi: "AQI: 110 - Moderate. Good visibility across the city",
+                weather: "High: 33°C, Low: 24°C. Humidity: 60%",
+                breakingNews: "Hyderabad's Pharma City to attract ₹10,000 crore investment",
+                temp: "33°C",
+                weatherDesc: "Clear, Pleasant",
+                humidity: "60%",
+                wind: "11 km/h"
+            },
+            nanded: {
+                name: "Nanded",
+                transport: "City Buses: All routes operational with normal frequency",
+                traffic: "Main Roads: Light traffic with smooth flow",
+                aqi: "AQI: 85 - Satisfactory. Clean air across the city",
+                weather: "High: 36°C, Low: 24°C. Humidity: 55%",
+                breakingNews: "Nanded's Gurudwara to host annual pilgrimage festival",
+                temp: "36°C",
+                weatherDesc: "Sunny, Clear",
+                humidity: "55%",
+                wind: "13 km/h"
+            },
+            pune: {
+                name: "Pune",
+                transport: "PMPML: Buses running with minor delays on some routes",
+                traffic: "SB Road: Moderate traffic during peak hours",
+                aqi: "AQI: 105 - Moderate. Pleasant weather conditions",
+                weather: "High: 32°C, Low: 22°C. Humidity: 58%",
+                breakingNews: "Pune's education hub expands with new international campus",
+                temp: "32°C",
+                weatherDesc: "Pleasant, Clear",
+                humidity: "58%",
+                wind: "16 km/h"
+            }
+        };
+
+        // Update date dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-IN', options);
+            document.querySelector('.header-date p:first-child').textContent = dateString;
+            
+            // Set up city selector
+            const citySelector = document.getElementById('citySelector');
+            const cityDropdown = document.getElementById('cityDropdown');
+            const currentCity = document.getElementById('currentCity');
+            const cityName = document.getElementById('cityName');
+            
+            citySelector.addEventListener('click', function() {
+                cityDropdown.classList.toggle('show');
+            });
+            
+            // Handle city selection
+            document.querySelectorAll('.city-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const city = this.getAttribute('data-city');
+                    updateCity(city);
+                    cityDropdown.classList.remove('show');
+                    
+                    // Update active class
+                    document.querySelectorAll('.city-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!citySelector.contains(event.target)) {
+                    cityDropdown.classList.remove('show');
+                }
+            });
+            
+            // Function to update city content
+            function updateCity(city) {
+                const data = cityData[city];
+                currentCity.textContent = data.name.toUpperCase();
+                cityName.textContent = data.name;
+                
+                document.getElementById('transportText').textContent = data.transport;
+                document.getElementById('trafficText').textContent = data.traffic;
+                document.getElementById('aqiText').textContent = data.aqi;
+                document.getElementById('weatherText').textContent = data.weather;
+                document.getElementById('breakingNewsText').textContent = data.breakingNews;
+                document.getElementById('nationalTemp').textContent = data.temp;
+                document.getElementById('nationalWeatherDesc').textContent = data.weatherDesc;
+                document.getElementById('nationalHumidity').textContent = data.humidity;
+                document.getElementById('nationalWind').textContent = data.wind;
+            }
+            
+            // Initialize with Mumbai data
+            updateCity('mumbai');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How It Works - TruthGuard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .process-step {
+      position: relative;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+    .process-step:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .step-number {
+      position: absolute;
+      top: -15px;
+      left: -15px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+    .tech-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    .tech-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .nav-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1rem 0;
+    }
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .nav-links a.active {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .dashboard-nav {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .demo-container {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-top: 2rem;
+    }
+    .demo-step {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .demo-step:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+  <!-- Login Page (Hidden when logged in) -->
+  <div id="loginPage" class="min-h-screen gradient-bg flex items-center justify-center p-4 hidden">
+    <div class="login-container p-8">
+      <div class="text-center mb-8">
+        <div class="flex items-center justify-center gap-2 mb-4">
+          <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            TruthGuard
+          </span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800">Welcome Back</h1>
+        <p class="text-gray-600 mt-2">Sign in to your account</p>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="email" required 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="your.email@example.com">
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" id="password" required 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="••••••••">
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input type="checkbox" id="remember" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
+          </div>
+          <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+        </div>
+        <button type="submit" 
+                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition shadow-md">
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-gray-600">Don't have an account? 
+          <a href="signup.html" class="text-blue-600 font-medium hover:underline">Sign up</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works Page -->
+  <div id="howItWorksPage">
+    <nav class="dashboard-nav text-white shadow-md">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-2">
+            <div class="logo-icon">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <span class="text-xl font-bold bg-gradient-to-r from-blue-100 to-purple-100 bg-clip-text text-transparent">
+              TruthGuard
+            </span>
+          </div>
+
+          <div class="flex items-center gap-6 text-sm">
+            <a href="index.html" class="hover:underline">Home</a>
+            <a href="Trending.html" class="hover:underline">Trending News</a>
+            <a href="feed.html" class="hover:underline">Feed page</a>
+            <a href="Indianews.html" class="hover:underline">IndiaNews</a>
+            <a href="dashboard.html" class="hover:underline">Dashboard</a>
+            <a href="how-it-works.html" class="active">How It Works</a>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <span id="userWelcome" class="text-sm">Welcome, User!</span>
+            <button id="logoutBtn" class="bg-white text-blue-600 px-4 py-1 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="text-center py-12 bg-gradient-to-r from-blue-50 to-purple-50">
+      <div class="container mx-auto px-6">
+        <h1 class="text-4xl font-bold text-blue-700 mb-4">How TruthGuard Works</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Our advanced AI system uses multiple verification techniques to detect fake news and misinformation. 
+          Learn about our process and technology below.
+        </p>
+      </div>
+    </header>
+
+    <section class="container mx-auto px-6 py-12">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-purple-700 mb-4">Our Four-Step Verification Process</h2>
+        <p class="text-gray-600 max-w-3xl mx-auto">
+          TruthGuard analyzes content through a comprehensive four-step process to determine its authenticity. 
+          Each step contributes to our final assessment with a confidence score.
+        </p>
+      </div>
+
+      <!-- Step 1: Content Analysis -->
+      <div class="process-step">
+        <div class="step-number">1</div>
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-2/3">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-3">Content Analysis</h3>
+            <p class="text-gray-600 mb-4">
+              Our system first analyzes the text content for patterns commonly associated with misinformation.
+            </p>
+            <ul class="list-disc pl-5 text-gray-600 space-y-2">
+              <li><strong>Language Patterns:</strong> Identifies sensationalist language, emotional triggers, and clickbait phrases</li>
+              <li><strong>Readability Metrics:</strong> Evaluates complexity and structure for manipulation indicators</li>
+              <li><strong>Sentiment Analysis:</strong> Detects emotionally charged language designed to provoke reactions</li>
+              <li><strong>Keyword Analysis:</strong> Identifies common misinformation keywords and phrases</li>
+            </ul>
+          </div>
+          <div class="md:w-1/3 flex items-center justify-center">
+            <div class="bg-blue-50 p-6 rounded-lg w-full">
+              <div class="text-center">
+                <i class="fas fa-search text-blue-500 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-blue-700 mb-2">Content Analysis</h4>
+                <p class="text-sm text-gray-600">First layer of detection focusing on textual patterns</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Source Verification -->
+      <div class="process-step">
+        <div class="step-number">2</div>
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-2/3">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-3">Source Verification</h3>
+            <p class="text-gray-600 mb-4">
+              We evaluate the credibility of the source and cross-reference it with our trusted database.
+            </p>
+            <ul class="list-disc pl-5 text-gray-600 space-y-2">
+              <li><strong>Domain Reputation:</strong> Checks the history and reputation of the publishing domain</li>
+              <li><strong>Author Verification:</strong> Validates author credentials and publication history</li>
+              <li><strong>Cross-Referencing:</strong> Compares with trusted sources and fact-checking databases</li>
+              <li><strong>Historical Accuracy:</strong> Reviews the source's track record for accuracy</li>
+            </ul>
+          </div>
+          <div class="md:w-1/3 flex items-center justify-center">
+            <div class="bg-green-50 p-6 rounded-lg w-full">
+              <div class="text-center">
+                <i class="fas fa-globe text-green-500 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-green-700 mb-2">Source Verification</h4>
+                <p class="text-sm text-gray-600">Evaluating source credibility and history</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Fact-Checking -->
+      <div class="process-step">
+        <div class="step-number">3</div>
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-2/3">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-3">Fact-Checking</h3>
+            <p class="text-gray-600 mb-4">
+              Our system compares claims against verified facts and checks for logical inconsistencies.
+            </p>
+            <ul class="list-disc pl-5 text-gray-600 space-y-2">
+              <li><strong>Claim Verification:</strong> Cross-references factual claims with trusted databases</li>
+              <li><strong>Logical Consistency:</strong> Analyzes internal consistency of the narrative</li>
+              <li><strong>Evidence Evaluation:</strong> Assesses the quality and relevance of supporting evidence</li>
+              <li><strong>Expert Opinion Matching:</strong> Compares claims with expert consensus</li>
+            </ul>
+          </div>
+          <div class="md:w-1/3 flex items-center justify-center">
+            <div class="bg-yellow-50 p-6 rounded-lg w-full">
+              <div class="text-center">
+                <i class="fas fa-check-circle text-yellow-500 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-yellow-700 mb-2">Fact-Checking</h4>
+                <p class="text-sm text-gray-600">Comparing claims against verified information</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Pattern Recognition -->
+      <div class="process-step">
+        <div class="step-number">4</div>
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-2/3">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-3">Pattern Recognition</h3>
+            <p class="text-gray-600 mb-4">
+              Our AI identifies patterns commonly found in misinformation campaigns and disinformation networks.
+            </p>
+            <ul class="list-disc pl-5 text-gray-600 space-y-2">
+              <li><strong>Network Analysis:</strong> Identifies connections to known misinformation networks</li>
+              <li><strong>Propagation Patterns:</strong> Analyzes how content spreads across platforms</li>
+              <li><strong>Manipulation Techniques:</strong> Detects common manipulation tactics and psychological triggers</li>
+              <li><strong>AI-Generated Content:</strong> Identifies patterns indicative of AI-generated misinformation</li>
+            </ul>
+          </div>
+          <div class="md:w-1/3 flex items-center justify-center">
+            <div class="bg-red-50 p-6 rounded-lg w-full">
+              <div class="text-center">
+                <i class="fas fa-brain text-red-500 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-red-700 mb-2">Pattern Recognition</h4>
+                <p class="text-sm text-gray-600">AI-powered detection of misinformation patterns</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="bg-gradient-to-r from-blue-50 to-purple-50 py-12">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-purple-700 mb-4">Our Technology</h2>
+          <p class="text-gray-600 max-w-3xl mx-auto">
+            TruthGuard leverages cutting-edge technologies to provide accurate and reliable fake news detection.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="tech-card">
+            <div class="text-center mb-4">
+              <i class="fas fa-robot text-blue-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-center mb-3">Machine Learning</h3>
+            <p class="text-gray-600">
+              Our system uses advanced ML algorithms trained on millions of verified news articles to identify patterns of misinformation.
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="text-center mb-4">
+              <i class="fas fa-language text-green-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-center mb-3">Natural Language Processing</h3>
+            <p class="text-gray-600">
+              We employ sophisticated NLP techniques to understand context, sentiment, and linguistic patterns in news content.
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="text-center mb-4">
+              <i class="fas fa-network-wired text-purple-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-center mb-3">Network Analysis</h3>
+            <p class="text-gray-600">
+              Our system analyzes how information spreads across networks to identify coordinated disinformation campaigns.
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="text-center mb-4">
+              <i class="fas fa-database text-yellow-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-center mb-3">Fact Databases</h3>
+            <p class="text-gray-600">
+              We maintain extensive databases of verified facts and cross-reference claims against multiple trusted sources.
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="text-center mb-4">
+              <i class="fas fa-user-shield text-red-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-center mb-3">Source Credibility Scoring</h3>
+            <p class="text-gray-600">
+              Our proprietary algorithm evaluates source credibility based on historical accuracy and expert ratings.
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="text-center mb-4">
+              <i class="fas fa-bolt text-indigo-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-center mb-3">Real-Time Processing</h3>
+            <p class="text-gray-600">
+              Our optimized architecture provides fast verification results without compromising accuracy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="container mx-auto px-6 py-12">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-purple-700 mb-4">See It In Action</h2>
+        <p class="text-gray-600 max-w-3xl mx-auto">
+          Try our verification process with a sample article to see how TruthGuard analyzes content.
+        </p>
+      </div>
+
+      <div class="demo-container">
+        <div class="demo-step">
+          <h3 class="text-xl font-semibold mb-3">Step 1: Enter Article Information</h3>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Article Title</label>
+              <input type="text" id="demoTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg" 
+                     value="Breaking: Scientists Discover Revolutionary Cure for All Diseases">
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Article Content</label>
+              <textarea id="demoContent" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+In a groundbreaking development that will change medicine forever, a team of renegade scientists has discovered a miracle cure that eliminates all known diseases. The treatment, derived from an Amazonian plant, has been kept secret by pharmaceutical companies for decades. Clinical trials show 100% success rates with zero side effects. Governments worldwide are scrambling to suppress this information to protect the multi-trillion dollar healthcare industry.
+              </textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Source URL</label>
+              <input type="text" id="demoSource" class="w-full px-4 py-2 border border-gray-300 rounded-lg" 
+                     value="https://healthbreakthroughs.net/amazing-cure">
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <h3 class="text-xl font-semibold mb-3">Step 2: Analysis Process</h3>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span>Content Analysis</span>
+                <span id="demoContentProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="demoContentBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span>Source Verification</span>
+                <span id="demoSourceProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="demoSourceBar" class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span>Fact-Checking</span>
+                <span id="demoFactProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="demoFactBar" class="bg-yellow-600 h-2.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Pattern Recognition</span>
+                <span id="demoPatternProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="demoPatternBar" class="bg-red-600 h-2.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <h3 class="text-xl font-semibold mb-3">Step 3: Results</h3>
+          <div id="demoResult" class="bg-gray-50 p-4 rounded-lg hidden">
+            <div class="flex items-center mb-4">
+              <i id="demoResultIcon" class="fas fa-times-circle text-red-500 text-3xl mr-3"></i>
+              <div>
+                <h4 id="demoResultTitle" class="text-xl font-semibold">Potential Fake News Detected</h4>
+                <p id="demoResultConfidence" class="text-gray-600">Confidence: 92%</p>
+              </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg">
+              <h5 class="font-semibold mb-2">Analysis Details:</h5>
+              <ul class="list-disc pl-5 text-gray-600 space-y-1">
+                <li id="demoDetail1">Content contains sensationalist language and unverifiable claims</li>
+                <li id="demoDetail2">Source has low credibility score and history of publishing misinformation</li>
+                <li id="demoDetail3">Claims contradict established scientific consensus</li>
+                <li id="demoDetail4">Pattern matches known health misinformation campaigns</li>
+              </ul>
+            </div>
+          </div>
+          <button id="runDemoBtn" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition shadow-md">
+            Run Demo Analysis
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="bg-gray-50 py-12">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-purple-700 mb-4">Frequently Asked Questions</h2>
+          <p class="text-gray-600 max-w-3xl mx-auto">
+            Find answers to common questions about TruthGuard and our verification process.
+          </p>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-6">
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold mb-2">How accurate is TruthGuard?</h3>
+            <p class="text-gray-600">
+              TruthGuard achieves an accuracy rate of over 92% in detecting fake news, based on independent testing. 
+              Our multi-layered approach reduces false positives and provides reliable results.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold mb-2">What types of content can TruthGuard analyze?</h3>
+            <p class="text-gray-600">
+              TruthGuard can analyze news articles, social media posts, blog content, and other text-based information. 
+              We're continuously expanding our capabilities to handle different content formats.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold mb-2">How long does the verification process take?</h3>
+            <p class="text-gray-600">
+              Most verifications are completed within 10-30 seconds, depending on the complexity of the content and 
+              current system load. Our real-time processing ensures quick results.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold mb-2">Is my data secure when using TruthGuard?</h3>
+            <p class="text-gray-600">
+              Yes, we take data privacy seriously. All analyses are conducted with strict privacy protocols, 
+              and we never share your verification history with third parties without your consent.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold mb-2">Can TruthGuard detect AI-generated fake news?</h3>
+            <p class="text-gray-600">
+              Yes, our pattern recognition algorithms are specifically trained to identify content generated by AI systems, 
+              including subtle patterns that distinguish machine-generated text from human writing.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-bg py-12 text-white">
+      <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold mb-4">Ready to Start Verifying News?</h2>
+        <p class="text-xl mb-8 max-w-2xl mx-auto">
+          Join thousands of users who trust TruthGuard to identify fake news and misinformation.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="dashboard.html" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition shadow-md">
+            Go to Dashboard
+          </a>
+          <a href="index.html" class="bg-transparent border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition">
+            Learn More
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // User data and verification history
+    let currentUser = null;
+
+    // DOM Elements
+    const loginPage = document.getElementById('loginPage');
+    const howItWorksPage = document.getElementById('howItWorksPage');
+    const loginForm = document.getElementById('loginForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userWelcome = document.getElementById('userWelcome');
+    const runDemoBtn = document.getElementById('runDemoBtn');
+    const demoResult = document.getElementById('demoResult');
+
+    // Demo progress bars
+    const demoContentBar = document.getElementById('demoContentBar');
+    const demoSourceBar = document.getElementById('demoSourceBar');
+    const demoFactBar = document.getElementById('demoFactBar');
+    const demoPatternBar = document.getElementById('demoPatternBar');
+    const demoContentProgress = document.getElementById('demoContentProgress');
+    const demoSourceProgress = document.getElementById('demoSourceProgress');
+    const demoFactProgress = document.getElementById('demoFactProgress');
+    const demoPatternProgress = document.getElementById('demoPatternProgress');
+
+    // Check if user is already logged in
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedUser = localStorage.getItem('truthGuardUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showHowItWorks();
+      } else {
+        showLogin();
+      }
+    });
+
+    // Login Form Handler
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('remember').checked;
+      
+      // Simple validation (in a real app, this would be a server call)
+      if (email && password) {
+        currentUser = {
+          email: email,
+          name: email.split('@')[0],
+          loginTime: new Date().toISOString()
+        };
+        
+        // Save user data if "remember me" is checked
+        if (remember) {
+          localStorage.setItem('truthGuardUser', JSON.stringify(currentUser));
+        }
+        
+        showHowItWorks();
+      }
+    });
+
+    // Logout Handler
+    logoutBtn.addEventListener('click', function() {
+      currentUser = null;
+      localStorage.removeItem('truthGuardUser');
+      showLogin();
+    });
+
+    // Run Demo Handler
+    runDemoBtn.addEventListener('click', function() {
+      runDemoAnalysis();
+    });
+
+    // Show How It Works Page
+    function showHowItWorks() {
+      loginPage.classList.add('hidden');
+      howItWorksPage.classList.remove('hidden');
+      userWelcome.textContent = `Welcome, ${currentUser.name}!`;
+    }
+
+    // Show Login
+    function showLogin() {
+      howItWorksPage.classList.add('hidden');
+      loginPage.classList.remove('hidden');
+      loginForm.reset();
+    }
+
+    // Run Demo Analysis
+    function runDemoAnalysis() {
+      // Reset demo UI
+      resetDemoUI();
+      
+      // Disable button during analysis
+      runDemoBtn.disabled = true;
+      runDemoBtn.textContent = 'Analyzing...';
+      
+      // Simulate analysis process
+      simulateDemoAnalysis();
+    }
+
+    // Reset Demo UI
+    function resetDemoUI() {
+      demoContentBar.style.width = '0%';
+      demoSourceBar.style.width = '0%';
+      demoFactBar.style.width = '0%';
+      demoPatternBar.style.width = '0%';
+      
+      demoContentProgress.textContent = '0%';
+      demoSourceProgress.textContent = '0%';
+      demoFactProgress.textContent = '0%';
+      demoPatternProgress.textContent = '0%';
+      
+      demoResult.classList.add('hidden');
+    }
+
+    // Simulate Demo Analysis
+    function simulateDemoAnalysis() {
+      // Step 1: Content Analysis
+      setTimeout(() => {
+        animateProgress(demoContentBar, demoContentProgress, 100, 1000);
+        
+        // Step 2: Source Verification
+        setTimeout(() => {
+          animateProgress(demoSourceBar, demoSourceProgress, 100, 1000);
+          
+          // Step 3: Fact-Checking
+          setTimeout(() => {
+            animateProgress(demoFactBar, demoFactProgress, 100, 1000);
+            
+            // Step 4: Pattern Recognition
+            setTimeout(() => {
+              animateProgress(demoPatternBar, demoPatternProgress, 100, 1000);
+              
+              // Show results
+              setTimeout(() => {
+                showDemoResults();
+              }, 500);
+              
+            }, 500);
+          }, 500);
+        }, 500);
+      }, 500);
+    }
+
+    // Animate Progress Bar
+    function animateProgress(bar, progressText, target, duration) {
+      const start = 0;
+      const increment = target / (duration / 10);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        
+        bar.style.width = `${current}%`;
+        progressText.textContent = `${Math.round(current)}%`;
+      }, 10);
+    }
+
+    // Show Demo Results
+    function showDemoResults() {
+      // Set result details for the demo article (which is clearly fake)
+      document.getElementById('demoResultIcon').className = 'fas fa-times-circle text-red-500 text-3xl mr-3';
+      document.getElementById('demoResultTitle').textContent = 'Potential Fake News Detected';
+      document.getElementById('demoResultConfidence').textContent = 'Confidence: 92%';
+      
+      document.getElementById('demoDetail1').textContent = 'Content contains sensationalist language and unverifiable claims';
+      document.getElementById('demoDetail2').textContent = 'Source has low credibility score and history of publishing misinformation';
+      document.getElementById('demoDetail3').textContent = 'Claims contradict established scientific consensus';
+      document.getElementById('demoDetail4').textContent = 'Pattern matches known health misinformation campaigns';
+      
+      // Show result
+      demoResult.classList.remove('hidden');
+      
+      // Re-enable button
+      runDemoBtn.disabled = false;
+      runDemoBtn.textContent = 'Run Demo Analysis';
+      
+      // Scroll to results
+      demoResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>

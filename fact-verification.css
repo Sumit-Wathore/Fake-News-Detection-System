@@ -1,0 +1,66 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+header {
+  background: #2f90d1;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Container */
+.container {
+  padding: 40px;
+  max-width: 900px;
+  margin: auto;
+}
+
+/* Headings */
+h2 {
+  color: #333;
+}
+
+/* Input Field */
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+/* Button */
+button {
+  padding: 12px 20px;
+  background: #7469df;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #7bf7ec;
+}
+
+/* Back Link */
+.back {
+  margin-top: 20px;
+  display: inline-block;
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.back:hover {
+  color: #555;
+}

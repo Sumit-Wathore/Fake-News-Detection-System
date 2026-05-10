@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - TruthDetect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #7d42f4;
+            --primary-dark: #6a2fd6;
+            --secondary: #1a73e8;
+            --accent: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc05;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-login:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* About Content */
+        .about-content {
+            padding: 4rem 0;
+        }
+
+        .about-section {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .about-section h2 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .about-section p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        .mission-vision {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mission-box, .vision-box {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .mission-box h3, .vision-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Team Section */
+        .team-section {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .team-section h2 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            text-align: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-card {
+            background: var(--light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .team-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .team-details {
+            padding: 2rem;
+        }
+
+        .team-details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .team-details .role {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .team-details p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .team-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .team-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .team-social a:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* Guide Section */
+        .guide-section {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .guide-section h2 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .guide-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .guide-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .guide-details {
+            padding: 2rem;
+        }
+
+        .guide-details h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .guide-details .role {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .guide-details p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* Project Details */
+        .project-details {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .project-details h2 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .project-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .project-card h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-card h3 i {
+            color: var(--primary);
+        }
+
+        .project-card ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .project-card li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .project-card li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            margin-top: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links, .auth-buttons {
+                display: none;
+            }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .page-header p {
+                font-size: 1rem;
+            }
+
+            .about-section, .team-section, .guide-section, .project-details {
+                padding: 2rem;
+            }
+
+            .project-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <div class="logo-icon">FND</div>
+                    <div class="logo-text">TruthDetect</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="how-it-works.html">How It Works</a></li>
+                    <li><a href="Indianews.html">NewsIndia</a></li>
+                    <li><a href="about.html" class="active">About</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button class="btn btn-login">Login</button>
+                    <button class="btn btn-register">Register</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>About TruthDetect</h1>
+            <p>Meet the team behind India's most advanced AI-powered fake news detection platform</p>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <div class="container">
+        <section class="about-content">
+            <!-- About Section -->
+            <div class="about-section">
+                <h2>Our Mission</h2>
+                <p>TruthDetect was created to combat the growing problem of misinformation and fake news in the digital age. With the rapid spread of false information through social media and messaging platforms, there is an urgent need for reliable tools to verify the authenticity of news content.</p>
+                <p>Our platform leverages advanced artificial intelligence and machine learning algorithms to analyze news articles, social media posts, and images for signs of misinformation. By combining AI analysis with human fact-checking, we provide users with accurate, timely assessments of content credibility.</p>
+                <p>In a world where misinformation can spread faster than truth, TruthDetect serves as a crucial tool for journalists, educators, and everyday citizens to make informed decisions about the information they consume and share.</p>
+                
+                <div class="mission-vision">
+                    <div class="mission-box">
+                        <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+                        <p>To empower individuals and organizations with reliable tools to identify and combat misinformation, fostering a more informed and truthful digital ecosystem.</p>
+                    </div>
+                    <div class="vision-box">
+                        <h3><i class="fas fa-eye"></i> Our Vision</h3>
+                        <p>A world where truth prevails in digital spaces, and people can confidently distinguish between factual information and misinformation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Team -->
+            <div class="team-section">
+                <h2>Development Team</h2>
+                <p style="text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">The talented developers who brought TruthDetect to life with their technical expertise and innovative thinking.</p>
+                
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-details">
+                            <h3>Rutuja Gandewar</h3>
+                            <div class="role">Frontend Developer</div>
+                            <p>Specialized in creating responsive and visually appealing user interfaces. Rutuj ensured the website delivers an optimal experience across all devices with intuitive navigation and modern design principles.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-details">
+                            <h3>Tirthraj Mahajan</h3>
+                            <div class="role">UI Developer</div>
+                            <p>Focused on server-side logic, database management, and API integration. Tirthraj built the robust foundation that powers our multi-source news verification platform, ensuring scalability and reliability.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-details">
+                            <h3>Trishran Dhuppe</h3>
+                            <div class="role">Full Stack Developer</div>
+                            <p>Bridged frontend and backend development with expertise in multiple technologies. Trishran implemented key features and ensured seamless integration between the user interface and the verification engine.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-details">
+                            <h3>Sumit Wathore</h3>
+                            <div class="role">Content Manager & QA Specialist</div>
+                            <p>Managed content strategy and ensured quality across the platform. Sumit verified functionality, optimized the user experience, and curated the fact-checking database that powers our verification algorithms.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Guide -->
+            <div class="guide-section">
+                <h2>Project Guide</h2>
+                <div class="guide-card">
+                    <div class="guide-image">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="guide-details">
+                        <h3>Mr. Titare Shivprasad</h3>
+                        <div class="role">Project Guide & Mentor</div>
+                        <p>With extensive experience in web development and digital media, Mr. Titare Shivprasad provided invaluable guidance and mentorship throughout the development of TruthDetect. His expertise in project management and technical direction helped shape the vision and execution of this comprehensive fake news detection platform.</p>
+                        <p>Under his guidance, the team successfully implemented a multi-source verification system that combines traditional fact-checking methodologies with modern AI technologies, creating an engaging and effective tool for combating misinformation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Details -->
+            <div class="project-details">
+                <h2>About This Project</h2>
+                <div class="project-info">
+                    <div class="project-card">
+                        <h3><i class="fas fa-lightbulb"></i> Project Vision</h3>
+                        <p>TruthDetect was developed as a comprehensive solution to the growing problem of misinformation in digital media. The project aimed to:</p>
+                        <ul>
+                            <li>Create an accessible platform for verifying news authenticity</li>
+                            <li>Implement AI-powered analysis of text and images</li>
+                            <li>Provide real-time verification results</li>
+                            <li>Educate users about misinformation patterns</li>
+                            <li>Build a database of known fake news sources</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3><i class="fas fa-cogs"></i> Technical Implementation</h3>
+                        <p>This project was built using modern web technologies and AI frameworks:</p>
+                        <ul>
+                            <li>HTML5, CSS3, and JavaScript for frontend development</li>
+                            <li>Python with TensorFlow for AI model training</li>
+                            <li>Natural Language Processing for text analysis</li>
+                            <li>Image recognition algorithms for visual content verification</li>
+                            <li>RESTful API architecture for seamless integration</li>
+                            <li>Responsive design for all device types</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3><i class="fas fa-feather-alt"></i> Design Philosophy</h3>
+                        <p>The design balances modern UI principles with functional requirements:</p>
+                        <ul>
+                            <li>Clean, intuitive interface for ease of use</li>
+                            <li>Visual indicators for verification status</li>
+                            <li>Progressive disclosure of complex information</li>
+                            <li>Accessibility considerations for diverse users</li>
+                            <li>Consistent branding across all platform elements</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3><i class="fas fa-trophy"></i> Key Features</h3>
+                        <p>TruthDetect offers several innovative features for news verification:</p>
+                        <ul>
+                            <li>Multi-format content analysis (text, images, URLs)</li>
+                            <li>Real-time verification with confidence scoring</li>
+                            <li>Source reliability assessment</li>
+                            <li>Historical verification tracking</li>
+                            <li>Educational resources on misinformation</li>
+                            <li>Social media integration for content sharing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+   
+
+    <!-- Footer -->
+    <footer>
+            <div class="footer-bottom">
+                <p >TruthDetect - Fake News Detection & Awareness. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

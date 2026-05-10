@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection - News & Research Feed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #7d42f4;
+            --primary-dark: #6a2fd6;
+            --secondary: #1a73e8;
+            --accent: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc05;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-login:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-dark);
+        }
+
+        .hero {
+            position: relative;
+            height: 80vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .slideshow-container {
+            position: relative;
+            height: 200px;
+            margin: 2rem auto;
+            overflow: hidden;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .slideshow {
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+            height: 100%;
+        }
+
+        .slide {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .fake-news-tag {
+            display: inline-block;
+            background: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .headline {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .headline-source {
+            font-size: 1rem;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .headline-source i {
+            color: var(--warning);
+        }
+
+        .slideshow-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-hero {
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* News Feed Section */
+        .feed-section {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feed-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .main-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .feed-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .feed-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .feed-source {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .feed-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .feed-time {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .feed-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .feed-content {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .feed-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .feed-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .trending-topics {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .trending-topics h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+
+        .topic-list {
+            list-style: none;
+        }
+
+        .topic-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .topic-number {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .topic-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .topic-count {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .research-highlights {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .research-highlights h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+
+        .research-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .research-item:last-child {
+            border-bottom: none;
+        }
+
+        .research-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .research-authors {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .research-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .stats {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid var(--accent);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .auth-buttons {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .headline {
+                font-size: 1.4rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-hero {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .feed-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <div class="logo-icon">FND</div>
+                    <div class="logo-text">TruthGuard</div>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+        <li><a href="Trending.html">Trending News</a></li>
+        <li><a href="about.html">About</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button class="btn btn-login" href="login.html">Login</button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Empowering Users with AI-Powered Truth Detection</h1>
+            <p>Identify fake or misleading news instantly with advanced AI models.</p>
+            
+            <div class="slideshow-container">
+                <div class="slideshow" id="slideshow">
+                </div>
+            </div>
+            
+            <div class="slideshow-indicators" id="indicators">
+            </div>
+            
+            <div class="cta-buttons">
+                <button class="btn btn-hero btn-primary">
+                    <i class="fas fa-shield-alt"></i> Verify News Now
+                </button>
+                <button class="btn btn-hero btn-secondary">
+                    <i class="fas fa-play-circle"></i> How It Works
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="feed-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Trending News & Research Feed</h2>
+                <p>Stay updated with the latest fake news alerts, research papers, and detection technologies</p>
+            </div>
+
+            <div class="feed-container">
+                <div class="main-feed" id="mainFeed">
+                    <!-- Feed items will be dynamically added here -->
+                </div>
+
+                <div class="sidebar">
+                    <div class="trending-topics">
+                        <h3>Trending Topics</h3>
+                        <ul class="topic-list" id="topicList">
+                            <!-- Trending topics will be dynamically added here -->
+                        </ul>
+                    </div>
+
+                    <div class="research-highlights">
+                        <h3>Research Highlights</h3>
+                        <div id="researchList">
+                            <!-- Research items will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TruthDetect</h3>
+                    <p>Combat misinformation with our advanced AI detection platform. Stay informed, stay safe.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">News Detection</a></li>
+                        <li><a href="#">Social Media Monitoring</a></li>
+                        <li><a href="#">Indian News</a></li>
+                        <li><a href="#">Research</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Login</a></li>
+                        <li><a href="#">Register</a></li>
+                        <li><a href="#">Admin Login</a></li>
+                        <li><a href="#">Forgot Password</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>TruthDetect - Fake News Detection & Awareness. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title" id="notifTitle">Success</div>
+            <div class="notification-message" id="notifMessage">New content added to your feed!</div>
+        </div>
+        <button class="notification-close" id="notifClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script>
+        const fakeNewsHeadlines = [
+            {
+                headline: "Government announces free money for all citizens - FALSE",
+                source: "WhatsApp Forward",
+                tag: "Financial Scam"
+            },
+            {
+                headline: "Celebrity death hoax spreads across social media",
+                source: "Twitter Trends",
+                tag: "Celebrity Rumor"
+            },
+            {
+                headline: "Miracle cure for diabetes discovered - Unverified",
+                source: "Facebook Posts",
+                tag: "Health Misinformation"
+            },
+            {
+                headline: "Election results manipulated claims go viral",
+                source: "Telegram Channels",
+                tag: "Political Misinformation"
+            },
+            {
+                headline: "Stock market crash prediction causes panic",
+                source: "YouTube Videos",
+                tag: "Financial Fearmongering"
+            },
+            {
+                headline: "Alien invasion footage proven to be CGI",
+                source: "TikTok Trends",
+                tag: "Fake Video"
+            }
+        ];
+
+        const feedItems = [
+            {
+                id: 1,
+                type: "news",
+                source: "Reuters Fact Check",
+                badge: "Verified",
+                time: "2 hours ago",
+                title: "Deepfake Video of Political Leader Circulating Online",
+                content: "A manipulated video showing a political leader making false statements is gaining traction on social media platforms. Our AI detection system has identified 87% probability of manipulation.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTIwLjUgM0g0LjVDMy42NzIgMyAzIDMuNjcyIDMgNC41VjE5LjVDMyAyMC4zMjggMy42NzIgMjEgNC41IDIxSDE5LjVDMjAuMzI4IDIxIDIxIDIwLjMyOCAyMSAxOS41VjcuNUwyMC41IDdaTTE5IDE5SDRWNWgxMXY0aDRWMTlaIi8+PC9zdmc+PC9zdmc+",
+                verified: true
+            },
+            {
+                id: 2,
+                type: "research",
+                source: "AI Research Journal",
+                badge: "New Study",
+                time: "5 hours ago",
+                title: "Transformer Models for Multimodal Fake News Detection",
+                content: "New research demonstrates how transformer-based models can effectively detect fake news across text, image, and video modalities with 94% accuracy.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6TTcgMGgxMHY0SDdWMHptMCAxNmgxMHY0SDd2LTR6bTEyIDVINVY1aDE0djE2eiIvPjwvc3ZnPjwvc3ZnPg==",
+                verified: true
+            },
+            {
+                id: 3,
+                type: "alert",
+                source: "FactCheck India",
+                badge: "Breaking",
+                time: "1 day ago",
+                title: "Coordinated Misinformation Campaign Targeting Elections",
+                content: "Our monitoring systems have detected a coordinated campaign spreading false information about election procedures. Multiple fake accounts are involved in this operation.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bS0yIDE1bC01LTUgMS40MS0xLjQxTDEwIDE0LjE3bDcuNTktNy41OUwxOSA4bC05IDl6Ii8+PC9zdmc+PC9zdmc+",
+                verified: false
+            }
+        ];
+
+        const trendingTopics = [
+            { id: 1, text: "Deepfake Detection", count: "45.2K" },
+            { id: 2, text: "Election Misinformation", count: "38.7K" },
+            { id: 3, text: "Health Scams", count: "32.1K" },
+            { id: 4, text: "Financial Fraud", count: "28.9K" },
+            { id: 5, text: "AI Verification Tools", count: "25.4K" }
+        ];
+
+        const researchItems = [
+            {
+                id: 1,
+                title: "BERT-based Fake News Detection with Attention Mechanism",
+                authors: "Zhang, W., Wang, L., & Chen, H.",
+                conference: "ACL 2023",
+                citations: 142
+            },
+            {
+                id: 2,
+                title: "Multimodal Fake News Detection Using Vision-Language Models",
+                authors: "Johnson, M., Smith, R., & Brown, K.",
+                conference: "NeurIPS 2023",
+                citations: 89
+            },
+            {
+                id: 3,
+                title: "Explainable AI for Fake News Detection: A User Study",
+                authors: "Patel, S., Williams, J., & Garcia, M.",
+                conference: "CHI 2023",
+                citations: 67
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const slideshow = document.getElementById('slideshow');
+            const indicators = document.getElementById('indicators');
+            const mainFeed = document.getElementById('mainFeed');
+            const topicList = document.getElementById('topicList');
+            const researchList = document.getElementById('researchList');
+            const notification = document.getElementById('notification');
+            const notifTitle = document.getElementById('notifTitle');
+            const notifMessage = document.getElementById('notifMessage');
+            const notifClose = document.getElementById('notifClose');
+            let currentSlide = 0;
+
+            fakeNewsHeadlines.forEach((headline, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.innerHTML = `
+                    <div class="fake-news-tag">${headline.tag}</div>
+                    <div class="headline">${headline.headline}</div>
+                    <div class="headline-source">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Source: ${headline.source}
+                    </div>
+                `;
+                slideshow.appendChild(slide);
+
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                if (index === 0) indicator.classList.add('active');
+                indicator.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+                indicators.appendChild(indicator);
+            });
+
+            feedItems.forEach(item => {
+                const feedItem = document.createElement('div');
+                feedItem.className = 'feed-item';
+                feedItem.innerHTML = `
+                    <div class="feed-header">
+                        <div class="feed-source">
+                            <i class="fas fa-${getSourceIcon(item.type)}"></i>
+                            ${item.source}
+                            <div class="feed-badge">${item.badge}</div>
+                        </div>
+                        <div class="feed-time">${item.time}</div>
+                    </div>
+                    <div class="feed-title">${item.title}</div>
+                    <div class="feed-content">${item.content}</div>
+                    ${item.image ? `<img src="${item.image}" class="feed-image" alt="Feed image">` : ''}
+                    <div class="feed-actions">
+                        <button class="btn btn-primary btn-small" onclick="analyzeContent(${item.id})">
+                            <i class="fas fa-search"></i> Analyze
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="shareContent(${item.id})">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="saveContent(${item.id})">
+                            <i class="fas fa-bookmark"></i> Save
+                        </button>
+                    </div>
+                `;
+                mainFeed.appendChild(feedItem);
+            });
+
+            trendingTopics.forEach((topic, index) => {
+                const topicItem = document.createElement('li');
+                topicItem.className = 'topic-item';
+                topicItem.innerHTML = `
+                    <div class="topic-number">${index + 1}</div>
+                    <div class="topic-text">${topic.text}</div>
+                    <div class="topic-count">${topic.count}</div>
+                `;
+                topicList.appendChild(topicItem);
+            });
+
+            researchItems.forEach(research => {
+                const researchItem = document.createElement('div');
+                researchItem.className = 'research-item';
+                researchItem.innerHTML = `
+                    <div class="research-title">${research.title}</div>
+                    <div class="research-authors">${research.authors}</div>
+                    <div class="research-meta">
+                        <span>${research.conference}</span>
+                        <span>${research.citations} citations</span>
+                    </div>
+                `;
+                researchList.appendChild(researchItem);
+            });
+
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % fakeNewsHeadlines.length;
+                updateSlideshow();
+            }, 3000);
+
+            function updateSlideshow() {
+                slideshow.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                    if (index === currentSlide) {
+                        indicator.classList.add('active');
+                    } else {
+                        indicator.classList.remove('active');
+                    }
+                });
+            }
+
+            function goToSlide(index) {
+                currentSlide = index;
+                updateSlideshow();
+            }
+
+            function getSourceIcon(type) {
+                switch(type) {
+                    case 'news': return 'newspaper';
+                    case 'research': return 'graduation-cap';
+                    case 'alert': return 'exclamation-triangle';
+                    default: return 'file-alt';
+                }
+            }
+
+            setInterval(() => {
+                addNewFeedItem();
+            }, 15000);
+
+            function addNewFeedItem() {
+                const newItem = {
+                    id: Date.now(),
+                    type: "news",
+                    source: "Live Monitoring",
+                    badge: "Just In",
+                    time: "Just now",
+                    title: "New Misinformation Pattern Detected",
+                    content: "Our AI systems have identified a new coordinated misinformation campaign targeting specific communities with false health claims.",
+                    image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlOGVmIi8+PHN2ZyB4PSIyMDAiIHk9IjEwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQyODVmNCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bS0yIDE1bC01LTUgMS40MS0xLjQxTDEwIDE0LjE3bDcuNTktNy41OUwxOSA4bC05IDl6Ii8+PC9zdmc+PC9zdmc+",
+                    verified: false
+                };
+
+                const feedItem = document.createElement('div');
+                feedItem.className = 'feed-item';
+                feedItem.innerHTML = `
+                    <div class="feed-header">
+                        <div class="feed-source">
+                            <i class="fas fa-${getSourceIcon(newItem.type)}"></i>
+                            ${newItem.source}
+                            <div class="feed-badge">${newItem.badge}</div>
+                        </div>
+                        <div class="feed-time">${newItem.time}</div>
+                    </div>
+                    <div class="feed-title">${newItem.title}</div>
+                    <div class="feed-content">${newItem.content}</div>
+                    ${newItem.image ? `<img src="${newItem.image}" class="feed-image" alt="Feed image">` : ''}
+                    <div class="feed-actions">
+                        <button class="btn btn-primary btn-small" onclick="analyzeContent(${newItem.id})">
+                            <i class="fas fa-search"></i> Analyze
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="shareContent(${newItem.id})">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="saveContent(${newItem.id})">
+                            <i class="fas fa-bookmark"></i> Save
+                        </button>
+                    </div>
+                `;
+                
+                mainFeed.insertBefore(feedItem, mainFeed.firstChild);
+                
+                if (mainFeed.children.length > 10) {
+                    mainFeed.removeChild(mainFeed.lastChild);
+                }
+                
+                showNotification('New Content', 'Fresh content has been added to your feed!');
+            }
+
+            function showNotification(title, message) {
+                notifTitle.textContent = title;
+                notifMessage.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+
+            notifClose.addEventListener('click', function() {
+                notification.classList.remove('show');
+            });
+        });
+
+        function analyzeContent(id) {
+            showNotification('Analysis Started', 'Content is being analyzed for authenticity...');
+            
+            setTimeout(() => {
+                showNotification('Analysis Complete', 'Content verification results are ready!');
+            }, 2000);
+        }
+
+        function shareContent(id) {
+            showNotification('Share', 'Content sharing options opened');
+        }
+
+        function saveContent(id) {
+            showNotification('Saved', 'Content has been saved to your library');
+        }
+    </script>
+</body>
+</html>

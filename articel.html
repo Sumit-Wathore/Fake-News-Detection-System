@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Articles Dashboard - TruthGuard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #7d42f4;
+            --primary-dark: #6a2fd6;
+            --secondary: #1a73e8;
+            --accent: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc05;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border: #dadce0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .dashboard-title h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-title p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .user-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .time-filter {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 8px 15px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.critical {
+            border-left-color: var(--danger);
+        }
+
+        .stat-card.trending {
+            border-left-color: var(--warning);
+        }
+
+        .stat-card.platform {
+            border-left-color: var(--secondary);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.critical {
+            background: linear-gradient(135deg, var(--danger), #ff6b6b);
+        }
+
+        .stat-icon.trending {
+            background: linear-gradient(135deg, var(--warning), #ffd93d);
+        }
+
+        .stat-icon.platform {
+            background: linear-gradient(135deg, var(--secondary), #4d96ff);
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-content p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Articles Table */
+        .articles-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(125, 66, 244, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .articles-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .articles-table thead {
+            background: var(--light);
+        }
+
+        .articles-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .articles-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-row {
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .article-row:hover {
+            background: rgba(125, 66, 244, 0.05);
+        }
+
+        .article-title {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .article-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .article-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .article-source {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .platform-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .platform-whatsapp {
+            background: rgba(37, 211, 102, 0.1);
+            color: #25d366;
+        }
+
+        .platform-facebook {
+            background: rgba(24, 119, 242, 0.1);
+            color: #1877f2;
+        }
+
+        .platform-twitter {
+            background: rgba(29, 161, 242, 0.1);
+            color: #1da1f2;
+        }
+
+        .platform-telegram {
+            background: rgba(0, 136, 204, 0.1);
+            color: #0088cc;
+        }
+
+        .trending-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .trending-up {
+            background: rgba(234, 67, 53, 0.1);
+            color: var(--danger);
+        }
+
+        .trending-down {
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--accent);
+        }
+
+        .article-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 120px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .stat-item i {
+            width: 16px;
+            color: var(--gray);
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+
+        .action-btn:hover {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .action-btn.analyze {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .action-btn.analyze:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Trending Now */
+        .trending-box {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .trending-box h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .trending-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .trending-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .trending-rank {
+            width: 28px;
+            height: 28px;
+            background: var(--light);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .trending-rank.top {
+            background: linear-gradient(135deg, var(--warning), #ffd93d);
+            color: white;
+        }
+
+        .trending-content h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .trending-meta {
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Spread Chart */
+        .chart-box {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-top: 1rem;
+        }
+
+        /* Analytics Section */
+        .analytics-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .analytics-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--gray);
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .article-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .detail-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .detail-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .detail-stat {
+            text-align: center;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .detail-stat h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-stat p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .verdict-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .verdict-fake {
+            background: rgba(234, 67, 53, 0.1);
+            color: var(--danger);
+        }
+
+        .verdict-misleading {
+            background: rgba(251, 188, 5, 0.1);
+            color: var(--warning);
+        }
+
+        .verdict-true {
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .articles-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .article-detail {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">FND</div>
+                    <div class="logo-text">TruthGuard</div>
+                </div>
+                <div class="dashboard-title">
+                    <h1><i class="fas fa-newspaper"></i> Fake News Articles Dashboard</h1>
+                    <p>Tracking trending misinformation across social platforms</p>
+                </div>
+                <div class="user-controls">
+                    <select class="time-filter" id="timeFilter">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="all">All Time</option>
+                    </select>
+                    <button class="btn btn-primary" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card critical">
+                <div class="stat-icon critical">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="criticalCount">47</h3>
+                    <p>Critical Fake News Articles</p>
+                </div>
+            </div>
+            <div class="stat-card trending">
+                <div class="stat-icon trending">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="trendingCount">128</h3>
+                    <p>Articles Trending Now</p>
+                </div>
+            </div>
+            <div class="stat-card platform">
+                <div class="stat-icon platform">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="platformCount">5</h3>
+                    <p>Platforms Monitored</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--accent), #6bcf7f);">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="viewCount">2.4M</h3>
+                    <p>Total Estimated Views</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Articles Table -->
+            <div class="articles-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Recent Fake News Articles</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search articles...">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="articles-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;">Article Title</th>
+                                <th>Source/Platform</th>
+                                <th>Trending Status</th>
+                                <th>Stats</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articlesTable">
+                            <!-- Articles will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Trending Now -->
+                <div class="trending-box">
+                    <h3><i class="fas fa-fire"></i> Top Trending Now</h3>
+                    <div class="trending-list" id="trendingList">
+                        <!-- Trending items will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Spread Chart -->
+                <div class="chart-box">
+                    <h3><i class="fas fa-chart-pie"></i> Platform Spread</h3>
+                    <div class="chart-container">
+                        <canvas id="platformChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="analytics-section">
+            <div class="analytics-card">
+                <h3><i class="fas fa-chart-bar"></i> Daily Detections</h3>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <h3><i class="fas fa-tags"></i> Categories Breakdown</h3>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>© 2025 TruthGuard Fake News Detection System | Data updates every 15 minutes</p>
+            <p class="last-update">Last updated: <span id="lastUpdate">Loading...</span></p>
+        </footer>
+    </div>
+
+    <!-- Article Detail Modal -->
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Article Details</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content loaded by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Sample data - In production, this would come from an API
+        const fakeNewsArticles = [
+            {
+                id: 1,
+                title: "Government announces free money for all citizens",
+                content: "False claims circulating about government distributing free money to all citizens via digital wallets. This is a financial scam targeting vulnerable populations.",
+                source: "WhatsApp",
+                platform: "whatsapp",
+                category: "Financial Scam",
+                spreadRate: "Rapid",
+                shares: 125000,
+                views: 2500000,
+                credibility: 10,
+                firstSeen: "2025-12-15",
+                trending: true,
+                trendingDirection: "up",
+                image: "https://picsum.photos/400/200?random=1",
+                verdict: "FAKE",
+                analysis: "No official announcement from government. Similar scams reported in multiple countries.",
+                countries: ["India", "Pakistan", "Bangladesh"]
+            },
+            {
+                id: 2,
+                title: "Miracle cure for diabetes discovered",
+                content: "Unverified claims about a 'miracle herb' that cures diabetes in 7 days. No scientific evidence supports these claims.",
+                source: "Facebook",
+                platform: "facebook",
+                category: "Health Misinformation",
+                spreadRate: "High",
+                shares: 89000,
+                views: 1800000,
+                credibility: 15,
+                firstSeen: "2025-12-14",
+                trending: true,
+                trendingDirection: "up",
+                image: "https://picsum.photos/400/200?random=2",
+                verdict: "MISLEADING",
+                analysis: "FDA has issued warnings about similar unproven treatments.",
+                countries: ["USA", "India", "UK"]
+            },
+            {
+                id: 3,
+                title: "Heavy water release from Godavari dam in Nanded",
+                content: "Claims about heavy water release from Godavari dam on 18 Dec 2025. While there were releases in September 2025, this specific claim appears to be exaggerated.",
+                source: "Twitter",
+                platform: "twitter",
+                category: "Local Panic",
+                spreadRate: "Medium",
+                shares: 45000,
+                views: 900000,
+                credibility: 35,
+                firstSeen: "2025-12-16",
+                trending: true,
+                trendingDirection: "up",
+                image: "https://picsum.photos/400/200?random=3",
+                verdict: "PARTIALLY FALSE",
+                analysis: "Dam did release water in September, but current levels are normal. Future date mentioned suggests fabricated urgency.",
+                countries: ["India"]
+            },
+            {
+                id: 4,
+                title: "Stock market crash predicted for next week",
+                content: "False predictions about major stock market crash based on fabricated insider information.",
+                source: "Telegram",
+                platform: "telegram",
+                category: "Financial Fearmongering",
+                spreadRate: "Medium",
+                shares: 32000,
+                views: 640000,
+                credibility: 5,
+                firstSeen: "2025-12-13",
+                trending: false,
+                trendingDirection: "down",
+                image: "https://picsum.photos/400/200?random=4",
+                verdict: "FAKE",
+                analysis: "No credible financial analysts support this prediction. Pattern matches previous market manipulation attempts.",
+                countries: ["Global"]
+            },
+            {
+                id: 5,
+                title: "Celebrity death hoax spreads online",
+                content: "False reports about celebrity death that gained traction on social media platforms.",
+                source: "Instagram",
+                platform: "facebook",
+                category: "Celebrity Rumor",
+                spreadRate: "Rapid",
+                shares: 210000,
+                views: 4200000,
+                credibility: 20,
+                firstSeen: "2025-12-15",
+                trending: true,
+                trendingDirection: "up",
+                image: "https://picsum.photos/400/200?random=5",
+                verdict: "DEBUNKED",
+                analysis: "Celebrity's representatives have confirmed they are alive and well.",
+                countries: ["Global"]
+            },
+            {
+                id: 6,
+                title: "Alien invasion footage goes viral",
+                content: "CGI footage presented as real alien invasion evidence.",
+                source: "TikTok",
+                platform: "other",
+                category: "Fake Video",
+                spreadRate: "High",
+                shares: 180000,
+                views: 3600000,
+                credibility: 8,
+                firstSeen: "2025-12-12",
+                trending: false,
+                trendingDirection: "down",
+                image: "https://picsum.photos/400/200?random=6",
+                verdict: "FAKE",
+                analysis: "Video analysis shows clear CGI artifacts. No credible sources report such events.",
+                countries: ["Global"]
+            },
+            {
+                id: 7,
+                title: "Election manipulation claims before voting",
+                content: "Baseless claims about election manipulation spread to undermine confidence in electoral process.",
+                source: "YouTube",
+                platform: "other",
+                category: "Political Misinformation",
+                spreadRate: "High",
+                shares: 95000,
+                views: 1900000,
+                credibility: 12,
+                firstSeen: "2025-12-14",
+                trending: true,
+                trendingDirection: "up",
+                image: "https://picsum.photos/400/200?random=7",
+                verdict: "MISLEADING",
+                analysis: "Election commission has verified all systems. Similar patterns seen in previous elections.",
+                countries: ["Multiple"]
+            },
+            {
+                id: 8,
+                title: "Vaccine side effects exaggerated claims",
+                content: "Exaggerated claims about vaccine side effects without scientific basis.",
+                source: "Facebook Groups",
+                platform: "facebook",
+                category: "Health Misinformation",
+                spreadRate: "Medium",
+                shares: 42000,
+                views: 840000,
+                credibility: 18,
+                firstSeen: "2025-12-13",
+                trending: false,
+                trendingDirection: "down",
+                image: "https://picsum.photos/400/200?random=8",
+                verdict: "MISINFORMATION",
+                analysis: "Contradicts peer-reviewed studies. WHO has debunked similar claims.",
+                countries: ["Global"]
+            }
+        ];
+
+        const trendingArticles = [
+            {
+                rank: 1,
+                title: "Free money government scheme scam",
+                shares: 125000,
+                platform: "WhatsApp",
+                change: "+15%"
+            },
+            {
+                rank: 2,
+                title: "Diabetes miracle cure hoax",
+                shares: 89000,
+                platform: "Facebook",
+                change: "+12%"
+            },
+            {
+                rank: 3,
+                title: "Celebrity death hoax",
+                shares: 210000,
+                platform: "Instagram",
+                change: "+8%"
+            },
+            {
+                rank: 4,
+                title: "Godavari dam water release claims",
+                shares: 45000,
+                platform: "Twitter",
+                change: "+22%"
+            },
+            {
+                rank: 5,
+                title: "Stock market crash predictions",
+                shares: 32000,
+                platform: "Telegram",
+                change: "-5%"
+            }
+        ];
+
+        // Charts
+        let platformChart, dailyChart, categoryChart;
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderArticlesTable();
+            renderTrendingList();
+            initializeCharts();
+            setupEventListeners();
+            updateLastUpdate();
+        });
+
+        function updateStats() {
+            const criticalCount = fakeNewsArticles.filter(a => a.credibility < 20).length;
+            const trendingCount = fakeNewsArticles.filter(a => a.trending).length;
+            const platforms = [...new Set(fakeNewsArticles.map(a => a.platform))].length;
+            const totalViews = fakeNewsArticles.reduce((sum, a) => sum + a.views, 0);
+            
+            document.getElementById('criticalCount').textContent = criticalCount;
+            document.getElementById('trendingCount').textContent = trendingCount;
+            document.getElementById('platformCount').textContent = platforms;
+            document.getElementById('viewCount').textContent = (totalViews / 1000000).toFixed(1) + 'M';
+        }
+
+        function renderArticlesTable() {
+            const tableBody = document.getElementById('articlesTable');
+            tableBody.innerHTML = '';
+            
+            fakeNewsArticles.forEach(article => {
+                const row = document.createElement('tr');
+                row.className = 'article-row';
+                row.dataset.id = article.id;
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="article-title">
+                            <div class="article-thumbnail" style="background: linear-gradient(135deg, ${getPlatformColor(article.platform)});"></div>
+                            <div class="article-info">
+                                <h4>${article.title}</h4>
+                                <div class="article-meta">
+                                    <span class="article-source">
+                                        <i class="fas fa-calendar"></i>
+                                        ${article.firstSeen}
+                                    </span>
+                                    <span class="article-category">${article.category}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="platform-badge platform-${article.platform}">
+                            <i class="${getPlatformIcon(article.platform)}"></i>
+                            ${article.source}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="trending-indicator trending-${article.trendingDirection}">
+                            <i class="fas fa-${article.trendingDirection === 'up' ? 'arrow-up' : 'arrow-down'}"></i>
+                            ${article.spreadRate}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="article-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(article.views)} views
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-share-alt"></i>
+                                ${formatNumber(article.shares)} shares
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-percentage"></i>
+                                ${article.credibility}% credibility
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="article-actions">
+                            <button class="action-btn analyze" onclick="showArticleDetail(${article.id})">
+                                <i class="fas fa-search"></i> Analyze
+                            </button>
+                            <button class="action-btn" onclick="markAsReviewed(${article.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add click event to rows
+            document.querySelectorAll('.article-row').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    if (!e.target.closest('.article-actions')) {
+                        const articleId = parseInt(this.dataset.id);
+                        showArticleDetail(articleId);
+                    }
+                });
+            });
+        }
+
+        function renderTrendingList() {
+            const trendingList = document.getElementById('trendingList');
+            trendingList.innerHTML = '';
+            
+            trendingArticles.forEach(item => {
+                const trendItem = document.createElement('div');
+                trendItem.className = 'trending-item';
+                
+                trendItem.innerHTML = `
+                    <div class="trending-rank ${item.rank <= 3 ? 'top' : ''}">
+                        ${item.rank}
+                    </div>
+                    <div class="trending-content">
+                        <h4>${item.title}</h4>
+                        <div class="trending-meta">
+                            <span><i class="fas fa-share-alt"></i> ${formatNumber(item.shares)}</span>
+                            <span><i class="${getPlatformIcon(item.platform.toLowerCase())}"></i> ${item.platform}</span>
+                            <span class="${item.change.startsWith('+') ? 'trending-up' : 'trending-down'}">
+                                ${item.change}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                trendingList.appendChild(trendItem);
+            });
+        }
+
+        function initializeCharts() {
+            // Platform Spread Chart
+            const platformCtx = document.getElementById('platformChart').getContext('2d');
+            const platformData = {
+                labels: ['WhatsApp', 'Facebook', 'Twitter', 'Telegram', 'Other'],
+                datasets: [{
+                    data: [35, 28, 18, 12, 7],
+                    backgroundColor: [
+                        '#25d366',
+                        '#1877f2',
+                        '#1da1f2',
+                        '#0088cc',
+                        '#5f6368'
+                    ]
+                }]
+            };
+            
+            platformChart = new Chart(platformCtx, {
+                type: 'doughnut',
+                data: platformData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Daily Detections Chart
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            dailyChart = new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Dec 10', 'Dec 11', 'Dec 12', 'Dec 13', 'Dec 14', 'Dec 15', 'Dec 16'],
+                    datasets: [{
+                        label: 'Fake News Detected',
+                        data: [12, 19, 15, 25, 22, 30, 28],
+                        borderColor: '#7d42f4',
+                        backgroundColor: 'rgba(125, 66, 244, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Categories Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(categoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Financial', 'Health', 'Political', 'Celebrity', 'Local'],
+                    datasets: [{
+                        label: 'Articles',
+                        data: [8, 12, 15, 9, 6],
+                        backgroundColor: [
+                            '#ea4335',
+                            '#34a853',
+                            '#1a73e8',
+                            '#fbbc05',
+                            '#7d42f4'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('.article-row');
+                
+                rows.forEach(row => {
+                    const title = row.querySelector('h4').textContent.toLowerCase();
+                    row.style.display = title.includes(searchTerm) ? '' : 'none';
+                });
+            });
+
+            // Time filter
+            document.getElementById('timeFilter').addEventListener('change', function() {
+                // In production, this would filter the data
+                console.log('Time filter changed to:', this.value);
+                updateLastUpdate();
+            });
+
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                this.classList.add('fa-spin');
+                setTimeout(() => {
+                    this.classList.remove('fa-spin');
+                    updateLastUpdate();
+                }, 1000);
+            });
+
+            // Modal close
+            document.getElementById('modalClose').addEventListener('click', function() {
+                document.getElementById('articleModal').classList.remove('active');
+            });
+
+            // Close modal on outside click
+            document.getElementById('articleModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        }
+
+        function showArticleDetail(articleId) {
+            const article = fakeNewsArticles.find(a => a.id === articleId);
+            if (!article) return;
+
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modal = document.getElementById('articleModal');
+
+            modalTitle.textContent = article.title;
+            
+            modalBody.innerHTML = `
+                <div class="article-detail">
+                    <div class="detail-content">
+                        <div class="verdict-badge verdict-${article.verdict.toLowerCase().replace(' ', '-')}">
+                            <i class="fas fa-${getVerdictIcon(article.verdict)}"></i>
+                            VERDICT: ${article.verdict}
+                        </div>
+                        
+                        <p><strong>Full Content:</strong> ${article.content}</p>
+                        
+                        <div class="detail-stats">
+                            <div class="detail-stat">
+                                <h4>${formatNumber(article.views)}</h4>
+                                <p>Estimated Views</p>
+                            </div>
+                            <div class="detail-stat">
+                                <h4>${formatNumber(article.shares)}</h4>
+                                <p>Shares</p>
+                            </div>
+                            <div class="detail-stat">
+                                <h4>${article.credibility}%</h4>
+                                <p>Credibility Score</p>
+                            </div>
+                        </div>
+                        
+                        <p><strong>Analysis:</strong> ${article.analysis}</p>
+                        
+                        <div class="detail-meta">
+                            <p><i class="fas fa-calendar"></i> <strong>First Seen:</strong> ${article.firstSeen}</p>
+                            <p><i class="fas fa-chart-line"></i> <strong>Spread Rate:</strong> ${article.spreadRate}</p>
+                            <p><i class="fas fa-tag"></i> <strong>Category:</strong> ${article.category}</p>
+                            <p><i class="fas fa-globe"></i> <strong>Countries Affected:</strong> ${article.countries.join(', ')}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-sidebar">
+                        <div class="platform-info">
+                            <h3><i class="${getPlatformIcon(article.platform)}"></i> Source Details</h3>
+                            <p><strong>Platform:</strong> ${article.platform.charAt(0).toUpperCase() + article.platform.slice(1)}</p>
+                            <p><strong>Source:</strong> ${article.source}</p>
+                        </div>
+                        
+                        <div class="recommendations">
+                            <h3><i class="fas fa-lightbulb"></i> Recommendations</h3>
+                            <ul>
+                                <li>Report this content on ${article.platform}</li>
+                                <li>Share verified information from official sources</li>
+                                <li>Educate contacts about this misinformation pattern</li>
+                                <li>Monitor for similar claims in your network</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons" style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="generateReport(${article.id})">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                    <button class="btn btn-secondary" onclick="markAsReviewed(${article.id})">
+                        <i class="fas fa-check-circle"></i> Mark as Reviewed
+                    </button>
+                    <button class="btn btn-danger" onclick="reportToPlatform('${article.platform}', ${article.id})">
+                        <i class="fas fa-flag"></i> Report to Platform
+                    </button>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function markAsReviewed(articleId) {
+            const article = fakeNewsArticles.find(a => a.id === articleId);
+            if (article) {
+                article.trending = false;
+                article.trendingDirection = 'down';
+                renderArticlesTable();
+                renderTrendingList();
+                updateStats();
+                
+                // Show confirmation
+                alert(`Article "${article.title.substring(0, 50)}..." marked as reviewed`);
+            }
+        }
+
+        function generateReport(articleId) {
+            const article = fakeNewsArticles.find(a => a.id === articleId);
+            if (!article) return;
+            
+            const reportContent = `
+                TRUTHGUARD FAKE NEWS REPORT
+                ============================
+                
+                Article Title: ${article.title}
+                Verdict: ${article.verdict}
+                Date: ${new Date().toLocaleDateString()}
+                
+                Analysis:
+                ${article.analysis}
+                
+                Statistics:
+                - Views: ${formatNumber(article.views)}
+                - Shares: ${formatNumber(article.shares)}
+                - Credibility Score: ${article.credibility}%
+                
+                Recommendations:
+                1. Do not share this content
+                2. Report to ${article.platform}
+                3. Share verified information instead
+                
+                Generated by TruthGuard Fake News Detection System
+            `;
+            
+            // Create downloadable file
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `truthguard-report-${article.id}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function reportToPlatform(platform, articleId) {
+            const platforms = {
+                'whatsapp': 'https://faq.whatsapp.com/general/security-and-privacy/reporting-a-message-or-account',
+                'facebook': 'https://www.facebook.com/help/181495968648557',
+                'twitter': 'https://help.twitter.com/en/rules-and-policies/x-report-violation',
+                'telegram': 'https://telegram.org/faq#spam'
+            };
+            
+            if (platforms[platform]) {
+                window.open(platforms[platform], '_blank');
+            } else {
+                alert(`Reporting guide for ${platform} not available. Please report through the platform's interface.`);
+            }
+            
+            markAsReviewed(articleId);
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+            document.getElementById('lastUpdate').textContent = formatted;
+        }
+
+        // Helper functions
+        function getPlatformIcon(platform) {
+            const icons = {
+                'whatsapp': 'fab fa-whatsapp',
+                'facebook': 'fab fa-facebook',
+                'twitter': 'fab fa-twitter',
+                'telegram': 'fab fa-telegram',
+                'other': 'fas fa-globe'
+            };
+            return icons[platform] || 'fas fa-share-alt';
+        }
+
+        function getPlatformColor(platform) {
+            const colors = {
+                'whatsapp': '#25d366, #128c7e',
+                'facebook': '#1877f2, #0d5cb6',
+                'twitter': '#1da1f2, #0c85d0',
+                'telegram': '#0088cc, #006699',
+                'other': '#667eea, #764ba2'
+            };
+            return colors[platform] || '#667eea, #764ba2';
+        }
+
+        function getVerdictIcon(verdict) {
+            switch(verdict) {
+                case 'FAKE': return 'times-circle';
+                case 'MISLEADING': return 'exclamation-triangle';
+                case 'PARTIALLY FALSE': return 'minus-circle';
+                case 'DEBUNKED': return 'check-circle';
+                default: return 'question-circle';
+            }
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Randomly update some articles
+            fakeNewsArticles.forEach(article => {
+                if (article.trending && Math.random() > 0.7) {
+                    const change = Math.floor(Math.random() * 10000);
+                    article.shares += change;
+                    article.views += change * 20;
+                }
+            });
+            
+            renderArticlesTable();
+            updateStats();
+        }, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>
